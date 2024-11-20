@@ -189,7 +189,8 @@ app.post("/save-user", async (req: Request, res: Response) => {
 // fixme: handle errors properly
 // todo; Add foreign key to student table. Add id's to both tables
 
-const { PORT } = process.env;
+const PORT = process.env.PORT || 8198;
+
 app.listen(PORT, () => {
 	console.log("Listening to PORT ", PORT);
 });
