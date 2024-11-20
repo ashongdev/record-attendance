@@ -18,7 +18,8 @@
 		"strictNullChecks": true,
 		"types": ["node"],
 		"outDir": "./dist",
-		"rootDir": "./src"
+		"rootDir": "./src",
+		"typeRoots": ["node_modules/@types"]
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "**/*.spec.ts"]
