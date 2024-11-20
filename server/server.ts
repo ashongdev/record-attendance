@@ -7,7 +7,25 @@ import { pool } from "./db";
 config();
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = ["http://localhost:5173", "https://record-attendance.vercel.app"];
+
+export type CorsCallback = (error: Error | null, success: boolean) => void;
+const corsOptions = {
+	origin: function (origin: string | undefined, callback: CorsCallback) {
+		if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+			callback(null, true);
+		} else {
+			callback(new Error("Not allowed by CORS"), false);
+		}
+	},
+	methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+	allowedHeaders: ["Content-Type", "Authorization"],
+	optionsSuccessStatus: 200,
+	credentials: true,
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 export type SignInType = {
