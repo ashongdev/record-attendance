@@ -14,13 +14,11 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noImplicitAny": true,
+		// "noEmit": true,
 		"noEmitOnError": true,
 		"strictNullChecks": true,
-		"types": ["node"],
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"typeRoots": ["node_modules/@types"]
+		"types": ["node"]
 	},
-	"include": ["src/**/*.ts"],
+	"include": ["./*.ts"],
 	"exclude": ["node_modules", "**/*.spec.ts"]
 }

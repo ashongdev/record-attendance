@@ -20,7 +20,7 @@ const StudentList = () => {
 	const getStudentList = async (courseCode: string, groupid: string) => {
 		try {
 			const res = await Axios.get(
-				`https://record-attendance.onrender.com:8198/std/${
+				`https://record-attendance.onrender.com/std/${
 					courseCode + "-" + groupid.toUpperCase()
 				}`
 			);
@@ -39,7 +39,7 @@ const StudentList = () => {
 	const getLecturersLocation = async (courseCode: string, groupid: string) => {
 		try {
 			const res = await Axios.get(
-				`https://record-attendance.onrender.com:8198/lec/${
+				`https://record-attendance.onrender.com/lec/${
 					courseCode + "-" + groupid.toUpperCase()
 				}`
 			);
@@ -84,7 +84,7 @@ const StudentList = () => {
 			<div className="display-list">
 				<table>
 					<thead>
-						<tr className="list header">
+						<tr className="list">
 							<th>No.</th>
 							<th>FullName</th>
 							<th>Index No.</th>
