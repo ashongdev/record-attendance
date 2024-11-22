@@ -20,11 +20,11 @@
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.8.0",
 		"pg": "^8.13.1",
-		"uuid": "^11.0.3"
+		"uuid": "^11.0.3",
+		"@types/node": "^22.9.1"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
-		"@types/dotenv": "^8.2.3",
 		"@types/express": "^5.0.0",
 		"@types/node": "^22.9.1",
 		"@types/pg": "^8.11.10",
