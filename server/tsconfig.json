@@ -14,11 +14,12 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noImplicitAny": true,
+		// "noEmit": true,
 		"noEmitOnError": true,
 		"strictNullChecks": true,
+		"types": ["node", "express", "pg", "uuid", "cors"],
 		"outDir": "./dist",
 		"typeRoots": ["node_modules/@types"]
 	},
-	"include": ["./*.ts"],
-	"exclude": ["node_modules", "**/*.spec.ts"]
+	"include": ["./*.ts"]
 }
