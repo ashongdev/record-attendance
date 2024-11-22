@@ -17,7 +17,7 @@
 		// "noEmit": true,
 		"noEmitOnError": true,
 		"strictNullChecks": true,
-		"types": ["node"],
+		"types": ["node", "express", "pg", "uuid", "cors"],
 		"outDir": "./dist",
 		"typeRoots": ["node_modules/@types"]
 	},
