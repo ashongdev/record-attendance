@@ -41,7 +41,7 @@ const CheckIn = () => {
 
 					try {
 						const res = await Axios.post(
-							"https://record-attendance.onrender.com:8198/save-user",
+							"https://record-attendance.onrender.com/save-user",
 							newFormInput
 						);
 
