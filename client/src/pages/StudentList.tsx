@@ -14,6 +14,7 @@ const StudentList = () => {
 		setLecturerLongitude,
 		lecturerLongitude,
 		lecturerLatitude,
+		registered,
 	} = useContextProvider();
 	const { getStorageItem } = useFunctions();
 
@@ -38,6 +39,13 @@ const StudentList = () => {
 
 	const getLecturersLocation = async (courseCode: string, groupid: string) => {
 		try {
+			if (!courseCode && !groupid) {
+				console.log("🚀 ~ getStudentList ~ error:", "Invalid course code and groupid");
+				setEmpty("Register course to view enrolled students.");
+
+				return;
+			}
+
 			const res = await Axios.get(
 				`https://record-attendance.onrender.com/lec/${
 					courseCode + "-" + groupid.toUpperCase()
@@ -74,7 +82,7 @@ const StudentList = () => {
 		<main>
 			<form onSubmit={(e) => e.preventDefault()}>
 				<div className="group shared">
-					<div>{lec?.coursecode}</div>
+					<div>{lec?.coursecode || "Course Code"}</div>
 					<div>GROUP {lec?.groupid}</div>
 
 					<button onClick={fireEvent}>Refresh</button>
@@ -121,12 +129,14 @@ const StudentList = () => {
 			</div>
 
 			<div className="check-in">
-				<Link
-					to="/std/check-in"
-					className="btn"
-				>
-					Check In
-				</Link>
+				{!registered && (
+					<Link
+						to="/lec/register"
+						className="btn"
+					>
+						Click here to register course
+					</Link>
+				)}
 			</div>
 		</main>
 	);

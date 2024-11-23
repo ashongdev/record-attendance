@@ -3,8 +3,8 @@ import Axios, { AxiosError } from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { SignInType } from "../exports/exports";
+import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
-import { SignInSchema } from "../schemas/Schemas";
 
 const SignIn = () => {
 	const {

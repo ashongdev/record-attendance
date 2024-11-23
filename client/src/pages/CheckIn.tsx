@@ -2,7 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { CheckInType } from "../exports/exports";
-import { CheckInSchema } from "../schemas/Schemas";
+import { CheckInSchema } from "../exports/Schemas";
 
 const CheckIn = () => {
 	/**
@@ -76,40 +76,44 @@ const CheckIn = () => {
 					<input
 						type="text"
 						{...register("fullname")}
+						placeholder="e.g., African Studies"
 					/>
 					<p className="error">{errors && errors.fullname?.message}</p>
 				</div>
 
-				<div className="shared">
-					<div>
-						<label htmlFor="id">ENTER COURSE CODE</label>
-						<div className="group">
-							<input
-								type="text"
-								maxLength={10}
-								{...register("coursecode")}
-							/>
-							<p className="error">{errors && errors.coursecode?.message}</p>
-						</div>
-					</div>
-					<div>
-						<label htmlFor="course-name">SELECT GROUP</label>
-						<select
-							id="group"
-							{...register("groupid")}
-						>
-							<option value="">--Select group--</option>
-							<option value="a">A</option>
-							<option value="b">B</option>
-							<option value="c">C</option>
-							<option value="d">D</option>
-							<option value="e">E</option>
-							<option value="f">F</option>
-							<option value="g">G</option>
-						</select>
-						<p className="error">{errors && errors.groupid?.message}</p>
-					</div>
+				{/* <div className="shared"> */}
+				{/* <div className="group"> */}
+				<label htmlFor="id">ENTER COURSE CODE</label>
+				<div className="group">
+					<input
+						type="text"
+						maxLength={10}
+						{...register("coursecode")}
+						placeholder="e.g., AFR-291"
+					/>
+					<p className="error">{errors && errors.coursecode?.message}</p>
 				</div>
+				{/* </div> */}
+				{/* <div> */}
+				<label htmlFor="course-name">SELECT GROUP</label>
+				<div className="group">
+					<select
+						id="group"
+						{...register("groupid")}
+					>
+						<option value="">--Select group--</option>
+						<option value="a">A</option>
+						<option value="b">B</option>
+						<option value="c">C</option>
+						<option value="d">D</option>
+						<option value="e">E</option>
+						<option value="f">F</option>
+						<option value="g">G</option>
+					</select>
+					<p className="error">{errors && errors.groupid?.message}</p>
+				</div>
+				{/* </div> */}
+				{/* </div> */}
 
 				<label htmlFor="full-name">ENTER YOUR INDEX NUMBER</label>
 				<div className="group">
@@ -117,6 +121,7 @@ const CheckIn = () => {
 						type="text"
 						maxLength={10}
 						{...register("indexnumber")}
+						placeholder="e.g., 421123890"
 					/>
 					<p className="error">{errors && errors.indexnumber?.message}</p>
 				</div>

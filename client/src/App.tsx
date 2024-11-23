@@ -6,6 +6,9 @@ import SignIn from "./pages/SignIn";
 import StudentList from "./pages/StudentList";
 
 const App = () => {
+	// ! Create a sign in feature for a lecturer who wants to sign in again
+	// Also create a unique key for lecturers only to protect some routes
+
 	return (
 		<>
 			<Nav />
@@ -19,7 +22,7 @@ const App = () => {
 					element={<StudentList />}
 				/>
 				<Route
-					path="/lec/sign-in"
+					path="/lec/register"
 					element={<SignIn />}
 				/>
 				<Route

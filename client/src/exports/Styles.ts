@@ -1,4 +1,4 @@
-import "./Home.css";
+import "../Home.css";
 
 const Styles = () => {
 	return null;
