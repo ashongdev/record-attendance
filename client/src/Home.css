@@ -32,22 +32,7 @@ nav {
 	white-space: nowrap;
 	/* position: fixed; */
 }
-nav .middle {
-	width: 50%;
-}
 
-nav .middle button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 0.6rem;
-	cursor: pointer;
-	border: 1px solid lightblue;
-}
-.search-icon {
-	height: 1rem;
-	width: 1rem;
-}
 nav .right {
 	display: flex;
 	flex-direction: column;
@@ -92,13 +77,15 @@ table {
 	justify-content: center;
 	align-items: center;
 }
-.check-in a,
-.group button {
+
+.group button,
+.home-link {
 	text-decoration: none;
 	padding: 0.5rem 1rem;
 	border: none;
 	cursor: pointer;
 	color: white;
+	border-radius: 3px;
 	background-color: rgb(9, 99, 255);
 	white-space: nowrap;
 }
@@ -123,7 +110,7 @@ form .shared div {
 form .group {
 	align-items: center;
 	margin-bottom: 2rem;
-	width: 80%;
+	width: 60%;
 }
 form .group.shared {
 	display: flex;
@@ -138,17 +125,35 @@ form label {
 	display: block;
 }
 form .group input,
-form .group div,
 select {
 	width: 100%;
 	/* min-width: 100px; */
 	max-width: 80%;
 	padding: 0.5rem 1rem;
+	border-radius: 8px;
 	border: 1px solid #c0c0c0;
 }
 form .error {
 	color: red;
 	font-size: 13px;
+}
+
+fieldset {
+	margin-bottom: 2rem;
+	border-radius: 3px;
+	padding-bottom: 2rem;
+}
+
+legend {
+	margin-left: 1rem;
+}
+
+.link {
+	border-radius: 3px;
+	background-color: green;
+	padding: 0.5rem 1rem;
+	color: white;
+	font-weight: bold;
 }
 
 @media (max-width: 321px) {
