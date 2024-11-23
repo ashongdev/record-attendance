@@ -21,18 +21,31 @@ const Home = () => {
 
 				<div className="group cont">
 					<p>Already registered a course? Click here to login.</p>
-					<Link to="/std/check-in">
-						<button>Log in</button>
-					</Link>
+
+					<div>
+						<Link
+							to="/std/check-in"
+							className="margin-right"
+						>
+							<button>Log in</button>
+						</Link>
+						<p className="margin-right">OR</p>
+						<Link
+							to="/lec/home"
+							// className="group cont"
+						>
+							<button className="home-link">View Student List</button>
+						</Link>
+					</div>
 				</div>
 
 				{/* {registered && ( */}
-				<Link
+				{/* <Link
 					to="/lec/home"
-					className="cont"
+					className="group cont"
 				>
 					<button className="home-link">View Student List</button>
-				</Link>
+				</Link> */}
 				{/* // // )} */}
 			</fieldset>
 

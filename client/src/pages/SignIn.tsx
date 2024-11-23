@@ -97,36 +97,32 @@ const SignIn = () => {
 					<p className="error">{errors && errors.coursename?.message}</p>
 				</div>
 
-				<div className="shared">
-					<div>
-						<label htmlFor="id">ENTER COURSE CODE</label>
-						<div className="group">
-							<input
-								type="text"
-								maxLength={10}
-								{...register("coursecode")}
-							/>
-							<p className="error">{errors && errors.coursecode?.message}</p>
-						</div>
-					</div>
+				<label htmlFor="id">ENTER COURSE CODE</label>
+				<div className="group">
+					<input
+						type="text"
+						maxLength={10}
+						{...register("coursecode")}
+					/>
+					<p className="error">{errors && errors.coursecode?.message}</p>
+				</div>
 
-					<div>
-						<label htmlFor="course-name">SELECT GROUP</label>
-						<select
-							id="group"
-							{...register("groupid")}
-						>
-							<option value="">--Select group--</option>
-							<option value="a">A</option>
-							<option value="b">B</option>
-							<option value="c">C</option>
-							<option value="d">D</option>
-							<option value="e">E</option>
-							<option value="f">F</option>
-							<option value="g">G</option>
-						</select>
-						<p className="error">{errors && errors.groupid?.message}</p>
-					</div>
+				<label htmlFor="course-name">SELECT GROUP</label>
+				<div className="group">
+					<select
+						id="group"
+						{...register("groupid")}
+					>
+						<option value="">--Select group--</option>
+						<option value="a">A</option>
+						<option value="b">B</option>
+						<option value="c">C</option>
+						<option value="d">D</option>
+						<option value="e">E</option>
+						<option value="f">F</option>
+						<option value="g">G</option>
+					</select>
+					<p className="error">{errors && errors.groupid?.message}</p>
 				</div>
 
 				<label htmlFor="fullName">ENTER YOUR NAME</label>

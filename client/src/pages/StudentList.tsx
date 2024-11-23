@@ -80,14 +80,17 @@ const StudentList = () => {
 
 	return (
 		<main>
-			<form onSubmit={(e) => e.preventDefault()}>
-				<div className="group shared">
-					<div>{lec?.coursecode || "Course Code"}</div>
-					<div>GROUP {lec?.groupid}</div>
+			<div className="group-info">
+				<div className="course-code">{lec?.coursecode || "Course Code"}</div>
+				<div className="group-id">GROUP {lec?.groupid || "Unknown"}</div>
 
-					<button onClick={fireEvent}>Refresh</button>
-				</div>
-			</form>
+				<button
+					className="refresh-btn"
+					onClick={fireEvent}
+				>
+					Refresh
+				</button>
+			</div>
 
 			<div className="display-list">
 				<table>
