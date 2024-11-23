@@ -14,7 +14,6 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noImplicitAny": true,
-		// "noEmit": true,
 		"noEmitOnError": true,
 		"strictNullChecks": true,
 		"types": ["node"],

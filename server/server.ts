@@ -191,6 +191,14 @@ app.post("/save-user", async (req: Request, res: Response) => {
 
 const PORT = process.env.PORT || 4002;
 
-app.listen(PORT, () => {
-	console.log("Listening to PORT ", PORT);
-});
+pool.connect()
+	.then((client) => {
+		app.listen(PORT, () => {
+			console.log("Connected to the database successfully and Listening to PORT ", PORT);
+		});
+
+		client.release();
+	})
+	.catch((err) => {
+		console.error("Error connecting to the database:", err);
+	});
