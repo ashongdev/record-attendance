@@ -4,7 +4,7 @@ export const SignInSchema = yup.object().shape({
 	coursecode: yup
 		.string()
 		.required("This field is required")
-		.matches(/^[A-Za-z]{3,4}-[0-9]{3,4}$/, "Please enter a valid course id"),
+		.matches(/^[A-Za-z]{2,4}-[0-9]{3,4}$/, "Please enter a valid course id"),
 	coursename: yup
 		.string()
 		.required("This field is required")
@@ -24,7 +24,7 @@ export const SignInSchema = yup.object().shape({
 export const CheckInSchema = yup.object().shape({
 	coursecode: yup
 		.string()
-		.matches(/^[A-Za-z]{3,4}-[0-9]{3,4}$/, "Please enter a valid course code")
+		.matches(/^[A-Za-z]{2,4}-[0-9]{3,4}$/, "Please enter a valid course code")
 		.required(),
 	fullname: yup
 		.string()

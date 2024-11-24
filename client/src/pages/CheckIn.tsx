@@ -76,7 +76,7 @@ const CheckIn = () => {
 					<input
 						type="text"
 						{...register("fullname")}
-						placeholder="e.g., African Studies"
+						placeholder="e.g., John Doe"
 					/>
 					<p className="error">{errors && errors.fullname?.message}</p>
 				</div>
