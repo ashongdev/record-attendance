@@ -42,6 +42,8 @@ const SignIn = () => {
 		}
 	}, []);
 
+	// !Create signin alert when course is registered!
+
 	const formSubmit = async (data: SignInType) => {
 		const newFormInput = {
 			...data,
@@ -53,8 +55,8 @@ const SignIn = () => {
 		if (lecturerLongitude && lecturerLatitude) {
 			try {
 				const response = await Axios.post(
-					// "https://rock-paper-scissors-app-iybf.onrender.com/api/user/login",
-					"https://record-attendance.onrender.com/sign-in",
+					// "https://record-attendance.onrender.com/sign-in",
+					"http://localhost:4400/sign-in",
 					newFormInput
 				);
 
@@ -62,6 +64,7 @@ const SignIn = () => {
 					setRegistered(true);
 
 					localStorage.setItem("lec", JSON.stringify(response.data));
+					alert("Course registered. Go back home to view enrolled students.");
 
 					setTimeout(() => {
 						// window.location.href = "/";
@@ -93,6 +96,7 @@ const SignIn = () => {
 					<input
 						type="text"
 						{...register("coursename")}
+						placeholder="e.g., African Studies"
 					/>
 					<p className="error">{errors && errors.coursename?.message}</p>
 				</div>
@@ -101,6 +105,7 @@ const SignIn = () => {
 				<div className="group">
 					<input
 						type="text"
+						placeholder="e.g., AFR-291"
 						maxLength={10}
 						{...register("coursecode")}
 					/>
@@ -130,6 +135,7 @@ const SignIn = () => {
 					<input
 						type="text"
 						{...register("fullname")}
+						placeholder="e.g., John Doe"
 					/>
 					<p className="error">{errors && errors.fullname?.message}</p>
 				</div>
