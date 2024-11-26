@@ -14,7 +14,6 @@ const StudentList = () => {
 		setLecturerLongitude,
 		lecturerLongitude,
 		lecturerLatitude,
-		registered,
 	} = useContextProvider();
 	const { getStorageItem } = useFunctions();
 
@@ -90,6 +89,12 @@ const StudentList = () => {
 				>
 					Refresh
 				</button>
+				{/* <button
+					className="delete-btn"
+					onClick={fireEvent}
+				>
+					Delete Today Records
+				</button> */}
 			</div>
 
 			<div className="display-list">
@@ -132,7 +137,7 @@ const StudentList = () => {
 			</div>
 
 			<div className="check-in">
-				{!registered && (
+				{!lec && (
 					<Link
 						to="/lec/register"
 						className="btn"

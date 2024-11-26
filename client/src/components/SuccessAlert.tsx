@@ -5,7 +5,7 @@ interface Props {
 	successMessage: string;
 	setShowSuccessMessage: Dispatch<SetStateAction<boolean>>;
 }
-const ErrorAlert: FC<Props> = ({ successMessage, setShowSuccessMessage }) => {
+const SuccessAlert: FC<Props> = ({ successMessage, setShowSuccessMessage }) => {
 	return (
 		<div className="error-alert-container">
 			<div className="error-alert">
@@ -17,8 +17,15 @@ const ErrorAlert: FC<Props> = ({ successMessage, setShowSuccessMessage }) => {
 						/>
 					</div>
 					<div className="alert-text">
-						<p className="alert-title">Success</p>
-						<p className="alert-description">{successMessage}</p>
+						{successMessage !== "Redirecting" ? (
+							<p className="alert-title">Success</p>
+						) : (
+							<p className="alert-title">{successMessage}</p>
+						)}
+
+						{successMessage === "Redirecting" && (
+							<p className="alert-description">You will be redirected shortly...</p>
+						)}
 					</div>
 				</div>
 				<button
@@ -45,4 +52,4 @@ const ErrorAlert: FC<Props> = ({ successMessage, setShowSuccessMessage }) => {
 	);
 };
 
-export default ErrorAlert;
+export default SuccessAlert;

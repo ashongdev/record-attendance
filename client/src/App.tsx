@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Nav from "./components/Nav";
+import useContextProvider from "./hooks/useContextProvider";
 import CheckIn from "./pages/CheckIn";
 import Landing from "./pages/Landing";
 import SignIn from "./pages/SignIn";
@@ -10,14 +11,23 @@ const App = () => {
 	// ! Create a sign in feature for a lecturer who wants to sign in again
 	// Also create a unique key for lecturers only to protect some routes
 
+	const { role } = useContextProvider();
+
+	function ProtectedRoute() {
+		if (role === "Lecturer") {
+			return role === "Lecturer" && <Navigate to="/lec/home" />;
+		} else if (role === "Student") {
+			return role === "Student" && <Navigate to="/std/home" />;
+		}
+	}
+
 	return (
 		<>
 			<Nav />
 			<Routes>
-				{/* Create a page showing "Are you a student" */}
 				<Route
 					path="/"
-					element={<Landing />}
+					element={role ? <ProtectedRoute /> : <Landing />}
 				/>
 				<Route
 					path="/std"
@@ -25,23 +35,74 @@ const App = () => {
 				/>
 				<Route
 					path="/lec"
-					element={<Navigate to="/lec/home" />}
+					element={
+						role ? (
+							role === "Lecturer" && <Navigate to="/lec/home" />
+						) : (
+							<Navigate to="/" />
+						)
+					}
 				/>
 				<Route
 					path="/std/home"
-					element={<StudentHome />}
+					element={
+						role ? (
+							role === "Student" ? (
+								<StudentHome />
+							) : (
+								<Navigate to="/lec/home" />
+							)
+						) : (
+							<Navigate to="/" />
+						)
+					}
 				/>
 				<Route
 					path="/lec/home"
-					element={<StudentList />}
+					element={
+						role ? (
+							role === "Lecturer" ? (
+								<StudentList />
+							) : (
+								<Navigate to="/std" />
+							)
+						) : (
+							<Navigate to="/" />
+						)
+					}
 				/>
 				<Route
 					path="/lec/register"
-					element={<SignIn />}
+					element={
+						role ? (
+							role === "Lecturer" ? (
+								<SignIn />
+							) : (
+								<Navigate to="/std/home" />
+							)
+						) : (
+							<Navigate to="/" />
+						)
+					}
 				/>
 				<Route
 					path="/std/check-in"
-					element={<CheckIn />}
+					element={
+						role ? (
+							role === "Student" ? (
+								<CheckIn />
+							) : (
+								<Navigate to="/lec/home" />
+							)
+						) : (
+							<Navigate to="/" />
+						)
+					}
+				/>
+
+				<Route
+					path="*"
+					element={<h1>This route is not found</h1>}
 				/>
 			</Routes>
 		</>

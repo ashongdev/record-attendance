@@ -9,13 +9,8 @@ import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
 
 const SignIn = () => {
-	const {
-		setRegistered,
-		setLecturerLatitude,
-		setLecturerLongitude,
-		lecturerLongitude,
-		lecturerLatitude,
-	} = useContextProvider();
+	const { setLecturerLatitude, setLecturerLongitude, lecturerLongitude, lecturerLatitude } =
+		useContextProvider();
 
 	const {
 		register,
@@ -71,7 +66,6 @@ const SignIn = () => {
 				);
 
 				if (response.data) {
-					setRegistered(true);
 					localStorage.setItem("lec", JSON.stringify(response.data));
 					setLoading(false);
 					setSuccessMessage(

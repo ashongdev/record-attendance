@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
-import useContextProvider from "../hooks/useContextProvider";
 
 const StudentHome = () => {
-	const { registered } = useContextProvider();
-
 	return (
 		<main>
 			<fieldset>
