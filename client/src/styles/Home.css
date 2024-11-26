@@ -15,7 +15,6 @@ body {
 	line-height: 1.5;
 }
 
-/* Main Container */
 main {
 	display: flex;
 	flex-direction: column;
@@ -25,7 +24,6 @@ main {
 	padding: 2rem;
 }
 
-/* Form Styling */
 form {
 	background-color: #fff;
 	padding: 2rem;
@@ -107,7 +105,7 @@ legend {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	gap: 1rem;
+	margin-bottom: 1rem;
 }
 
 .cont {
@@ -270,7 +268,7 @@ tr:hover {
 	text-transform: uppercase;
 }
 
-.refresh-btn {
+.btn {
 	background-color: #007bff;
 	color: #fff;
 	padding: 0.6rem 1.2rem;
@@ -280,6 +278,24 @@ tr:hover {
 	border-radius: 4px;
 	cursor: pointer;
 	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.refresh-btn {
+	background-color: #007bff;
+}
+
+.delete-btn {
+	background-color: red;
+}
+
+.delete-btn:hover {
+	background-color: #b32d00;
+	transform: scale(1.05);
+}
+
+.delete-btn:active {
+	background-color: #ef2a2abe;
+	transform: scale(1);
 }
 
 .refresh-btn:hover {
@@ -296,7 +312,6 @@ tr:hover {
 @media (max-width: 768px) {
 	.group {
 		flex-direction: column;
-		gap: 0.5rem;
 	}
 
 	th,
@@ -308,4 +323,67 @@ tr:hover {
 		padding: 0.5rem 0.75rem;
 		font-size: 0.875rem;
 	}
+}
+
+/* New */
+.error-alert-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 25rem;
+	z-index: 50;
+	position: absolute;
+	top: 2rem;
+}
+
+@media (max-width: 640px) {
+	.error-alert-container {
+		width: 20rem;
+		font-size: 0.875rem;
+	}
+}
+
+.error-alert {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #232531;
+	border-radius: 0.5rem;
+	padding: 0.625rem;
+}
+
+.alert-content {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.icon-container {
+	color: #d65563;
+	padding: 0.25rem;
+	display: flex;
+	align-items: center;
+}
+
+.icon {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.alert-text {
+	font-size: 0.875rem;
+	color: #cccccc;
+}
+
+.close-btn {
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 1.25rem;
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	transition: color 0.3s;
+}
+
+.close-btn:hover {
+	color: #e0e0e0;
 }

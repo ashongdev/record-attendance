@@ -1,0 +1,59 @@
+/* Overall Page Styles */
+.landing-page {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background: linear-gradient(135deg, #6a11cb, #2575fc);
+	color: #fff;
+	font-family: "Arial", sans-serif;
+	text-align: center;
+}
+
+.landing-page h1 {
+	font-size: 2.5rem;
+	margin-bottom: 1rem;
+}
+
+.landing-page p {
+	font-size: 1.2rem;
+	margin-bottom: 2rem;
+}
+
+/* Roles Container */
+.roles {
+	display: flex;
+	gap: 1.5rem;
+}
+
+/* Role Buttons */
+.role-button {
+	padding: 0.75rem 1.5rem;
+	font-size: 1rem;
+	font-weight: bold;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.role-button.lecturer {
+	background: #ff8c42; /* Orange */
+}
+
+.role-button.student {
+	background: #42a5f5; /* Blue */
+}
+
+.role-button:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.role-button:active {
+	transform: translateY(1px);
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}

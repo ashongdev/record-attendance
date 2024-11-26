@@ -1,6 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ErrorAlert from "../components/ErrorAlert";
+import SuccessAlert from "../components/SuccessAlert";
 import { CheckInType } from "../exports/exports";
 import { CheckInSchema } from "../exports/Schemas";
 
@@ -20,114 +23,186 @@ const CheckIn = () => {
 		resolver: yupResolver(CheckInSchema),
 	});
 
-	const formSubmit = async (data: CheckInType) => {
-		if (!data) return;
+	const [error, setError] = useState({ header: "", description: "" });
+	const [showErrorMessage, setShowErrorMessage] = useState(false);
+	const [successMessage, setSuccessMessage] = useState("");
+	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+	const [loading, setLoading] = useState(false);
 
-		const newFormInput = {
-			...data,
-			time: new Date(),
-			long: 0,
-			lat: 0,
+	const [newFormInput, setNewFormInput] = useState({
+		time: new Date(),
+		long: 0,
+		lat: 0,
+	});
+
+	// Geolocation handler
+	useEffect(() => {
+		const options = {
+			enableHighAccuracy: true,
+			timeout: 5000,
+			maximumAge: 0,
 		};
 
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				async (position) => {
-					const latitude = position.coords.latitude;
-					const longitude = position.coords.longitude;
+		navigator.geolocation.getCurrentPosition(
+			(pos) => {
+				const crd = pos.coords;
+				setNewFormInput((prev) => ({
+					...prev,
+					long: crd.longitude,
+					lat: crd.latitude,
+				}));
+			},
+			(err) => {
+				setError({
+					header: "Location Error",
+					description: "Unable to retrieve your location. Please enable GPS.",
+				});
+				setShowErrorMessage(true);
+				setTimeout(() => setShowErrorMessage(false), 3000);
+				console.warn(`ERROR(${err.code}): ${err.message}`);
+			},
+			options
+		);
+	}, []);
 
-					newFormInput.lat = Number(latitude);
-					newFormInput.long = Number(longitude);
+	// Form submission handler
+	const formSubmit = async (data: CheckInType) => {
+		if (!newFormInput.lat || !newFormInput.long) {
+			setError({
+				header: "Location Error",
+				description: "Please allow location access before checking in.",
+			});
+			setShowErrorMessage(true);
+			setTimeout(() => setShowErrorMessage(false), 3000);
+			return;
+		}
 
-					try {
-						const res = await Axios.post(
-							"https://record-attendance.onrender.com/save-user",
-							newFormInput
-						);
+		setLoading(true);
 
-						if (res.data) {
-							alert("Data recorded.");
-						}
-					} catch (error) {
-						if (error instanceof AxiosError && error.response) {
-							alert(error.response.data);
-						} else {
-							console.error("An unexpected error occurred:", error);
-						}
-					}
-				},
-				(error) => {
-					console.error("Error getting location:", error);
-				}
+		try {
+			const res = await Axios.post(
+				// "http://localhost:4401/save-user",
+				"https://record-attendance.onrender.com/save-user",
+				{ ...data, ...newFormInput }
 			);
-		} else {
-			console.error("Geolocation is not supported by this browser.");
+
+			setLoading(false);
+			setSuccessMessage("Your check-in has been successfully recorded.");
+			setShowSuccessMessage(true);
+			setTimeout(() => setShowSuccessMessage(false), 2000);
+		} catch (err) {
+			setLoading(false);
+			setShowErrorMessage(true);
+			setTimeout(() => setShowErrorMessage(false), 3000);
+
+			if (err instanceof AxiosError && err.response) {
+				const reqError: string = err.response.data;
+				if (/not registered/i.test(reqError)) {
+					setError({
+						header: "Invalid Course",
+						description:
+							"Invalid course code or group ID. Verify your input or check with your lecturer.",
+					});
+				} else if (/double entry detected/i.test(reqError)) {
+					setError({
+						header: "Duplicate Entry",
+						description: "An entry with the same details already exists.",
+					});
+				} else {
+					setError({
+						header: "Unexpected Error",
+						description: "Something went wrong. Please try again later.",
+					});
+				}
+			} else {
+				setError({
+					header: "Network Error",
+					description: "Unable to connect to the server. Please try again.",
+				});
+			}
 		}
 	};
 
 	return (
 		<main>
+			{showErrorMessage && (
+				<ErrorAlert
+					error={error}
+					setShowErrorMessage={setShowErrorMessage}
+				/>
+			)}
+
+			{showSuccessMessage && (
+				<SuccessAlert
+					successMessage={successMessage}
+					setShowSuccessMessage={setShowSuccessMessage}
+				/>
+			)}
+
 			<form
-				className="flex"
+				className="flex flex-col gap-4"
 				onSubmit={handleSubmit(formSubmit)}
 			>
-				<label htmlFor="full-name">ENTER YOUR FULL NAME</label>
 				<div className="group">
+					<label htmlFor="fullname">Full Name</label>
 					<input
 						type="text"
+						id="fullname"
 						{...register("fullname")}
 						placeholder="e.g., John Doe"
 					/>
-					<p className="error">{errors && errors.fullname?.message}</p>
+					<p className="error">{errors.fullname?.message}</p>
 				</div>
 
-				{/* <div className="shared"> */}
-				{/* <div className="group"> */}
-				<label htmlFor="id">ENTER COURSE CODE</label>
 				<div className="group">
+					<label htmlFor="coursecode">Course Code</label>
 					<input
 						type="text"
+						id="coursecode"
 						maxLength={10}
 						{...register("coursecode")}
 						placeholder="e.g., AFR-291"
 					/>
-					<p className="error">{errors && errors.coursecode?.message}</p>
+					<p className="error">{errors.coursecode?.message}</p>
 				</div>
-				{/* </div> */}
-				{/* <div> */}
-				<label htmlFor="course-name">SELECT GROUP</label>
+
 				<div className="group">
+					<label htmlFor="groupid">Group</label>
 					<select
-						id="group"
+						id="groupid"
 						{...register("groupid")}
 					>
-						<option value="">--Select group--</option>
-						<option value="a">A</option>
-						<option value="b">B</option>
-						<option value="c">C</option>
-						<option value="d">D</option>
-						<option value="e">E</option>
-						<option value="f">F</option>
-						<option value="g">G</option>
+						<option value="">--Select Group--</option>
+						{["A", "B", "C", "D", "E", "F", "G"].map((group) => (
+							<option
+								key={group}
+								value={group.toLowerCase()}
+							>
+								{group}
+							</option>
+						))}
 					</select>
-					<p className="error">{errors && errors.groupid?.message}</p>
+					<p className="error">{errors.groupid?.message}</p>
 				</div>
-				{/* </div> */}
-				{/* </div> */}
 
-				<label htmlFor="full-name">ENTER YOUR INDEX NUMBER</label>
 				<div className="group">
+					<label htmlFor="indexnumber">Index Number</label>
 					<input
 						type="text"
+						id="indexnumber"
 						maxLength={10}
 						{...register("indexnumber")}
 						placeholder="e.g., 421123890"
 					/>
-					<p className="error">{errors && errors.indexnumber?.message}</p>
+					<p className="error">{errors.indexnumber?.message}</p>
 				</div>
 
 				<div className="group">
-					<button>Check In</button>
+					{!loading ? (
+						<button type="submit">Check In</button>
+					) : (
+						<div className="loader" />
+					)}
 				</div>
 			</form>
 		</main>

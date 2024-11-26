@@ -33,22 +33,6 @@ export type SignInType = {
 	name: string | null;
 };
 
-function handleErrors(err: any) {
-	const error = {};
-
-	if (err.message.includes('violates unique constraint "lecturers_pkey"')) {
-		return "An entry with the same course code already exists. Please use a unique value and try again.";
-	}
-
-	if (err.message.includes(' violates unique constraint "studentlist_pkey"')) {
-		return "An entry with the same index number already exists. Please use a unique value and try again.";
-	}
-
-	if (err.message.includes('violates unique constraint "unq_name"')) {
-		return "An entry with the same course title already exists. Please use a unique value and try again.";
-	}
-}
-
 app.get("/std/:courseCode", async (req: Request, res: Response) => {
 	const { courseCode } = req.params;
 	const splitCode = courseCode.split("-");
@@ -63,6 +47,8 @@ app.get("/std/:courseCode", async (req: Request, res: Response) => {
 
 		res.status(200).json(sql.rows);
 	} catch (error) {
+		// TODO : Handle errors properly
+		res.status(404);
 		console.log("🚀 ~ app.get ~ error:", error);
 	}
 });
@@ -107,7 +93,7 @@ app.post("/sign-in", async (req: Request, res: Response) => {
 	);
 
 	if (check.rowCount === 1) {
-		res.status(403).json("An entry with the same details exists. Please try again.");
+		res.status(403).json("Double Entry Detected.");
 	} else {
 		try {
 			await pool.query(`INSERT INTO LECTURERS VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [
@@ -127,9 +113,7 @@ app.post("/sign-in", async (req: Request, res: Response) => {
 
 			res.status(200).json(sql.rows[0]);
 		} catch (error) {
-			const errors = handleErrors(error);
-			console.log(error);
-			res.status(403).json(errors);
+			res.status(403).json(error);
 		}
 	}
 });
@@ -155,7 +139,7 @@ app.post("/save-user", async (req: Request, res: Response) => {
 			);
 
 			if (check.rowCount === 1) {
-				res.status(403).json("An entry with the same details exists. Please try again.");
+				res.status(403).json("Double Entry Detected.");
 			} else {
 				const randomID = uuid();
 
@@ -176,14 +160,10 @@ app.post("/save-user", async (req: Request, res: Response) => {
 				res.status(200).json({ msg: "Student checked in." });
 			}
 		} else {
-			res.status(403).json(
-				"Invalid course code or group id entered. You have either entered a wrong code/ID or it has not been registered by your lecturer."
-			);
+			res.status(403).json("Not registered");
 		}
 	} catch (error) {
-		const errors = handleErrors(error);
-		console.log("🚀 ~ app.post ~ errors:", error);
-		res.status(403).json(errors);
+		res.status(403).json(error);
 	}
 });
 // fixme: handle errors properly

@@ -1,7 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import ErrorAlert from "../components/ErrorAlert";
+import SuccessAlert from "../components/SuccessAlert";
 import { SignInType } from "../exports/exports";
 import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
@@ -23,6 +25,13 @@ const SignIn = () => {
 		resolver: yupResolver(SignInSchema),
 	});
 
+	const [error, setError] = useState({ header: "", description: "" });
+	const [showErrorMessage, setShowErrorMessage] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [successMessage, setSuccessMessage] = useState("");
+	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+	// Get the geolocation of the lecturer
 	useEffect(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
@@ -42,8 +51,7 @@ const SignIn = () => {
 		}
 	}, []);
 
-	// !Create signin alert when course is registered!
-
+	// Handle form submission
 	const formSubmit = async (data: SignInType) => {
 		const newFormInput = {
 			...data,
@@ -53,95 +61,138 @@ const SignIn = () => {
 		};
 
 		if (lecturerLongitude && lecturerLatitude) {
+			setLoading(true);
 			try {
 				const response = await Axios.post(
+					// Update the URL when deploying
+					// "http://localhost:4401/sign-in",
 					"https://record-attendance.onrender.com/sign-in",
-					// "http://localhost:4400/sign-in",
 					newFormInput
 				);
 
 				if (response.data) {
 					setRegistered(true);
-
 					localStorage.setItem("lec", JSON.stringify(response.data));
-					alert("Course registered. Go back home to view enrolled students.");
-
-					setTimeout(() => {
-						// window.location.href = "/";
-					}, 2000);
+					setLoading(false);
+					setSuccessMessage(
+						"Course registered successfully! You can now view the enrolled students on the home page."
+					);
+					setShowSuccessMessage(true);
+					setTimeout(() => setShowSuccessMessage(false), 2000);
 				}
-			} catch (error) {
-				if (error instanceof AxiosError && error.response) {
-					alert(error.response.data);
+			} catch (err) {
+				setLoading(false);
+				setShowErrorMessage(true);
+
+				setTimeout(() => setShowErrorMessage(false), 3000);
+
+				if (err instanceof AxiosError && err.response) {
+					const { data } = err.response;
+					const reqError: string = data;
+
+					if (/double entry detected/i.test(reqError)) {
+						setError({
+							header: "Duplicate Entry.",
+							description: "An entry with the same details already exists.",
+						});
+					} else {
+						setError({
+							header: "Unexpected Error",
+							description: "An unexpected error occurred. Please try again later.",
+						});
+					}
 				} else {
-					console.error("An unexpected error occurred:", error);
+					setError({
+						header: "Unexpected Error",
+						description: "An unexpected error occurred. Please try again later.",
+					});
 				}
 			}
 		} else {
-			alert(
-				"Could not get your location. Check your internet connection and allow this app to access your location."
-			);
+			setShowErrorMessage(true);
+			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
 	};
-	// todo : authorize lecturer info always
 
 	return (
 		<main>
+			{error && showErrorMessage && (
+				<ErrorAlert
+					error={error}
+					setShowErrorMessage={setShowErrorMessage}
+				/>
+			)}
+
+			{showSuccessMessage && (
+				<SuccessAlert
+					successMessage={successMessage}
+					setShowSuccessMessage={setShowSuccessMessage}
+				/>
+			)}
+
 			<form
-				className="flex"
+				className="flex flex-col gap-4"
 				onSubmit={handleSubmit(formSubmit)}
 			>
-				<label htmlFor="course-name">ENTER COURSE TITLE</label>
+				<label htmlFor="coursename">Enter Course Title</label>
 				<div className="group">
 					<input
 						type="text"
+						id="coursename"
 						{...register("coursename")}
 						placeholder="e.g., African Studies"
 					/>
-					<p className="error">{errors && errors.coursename?.message}</p>
+					<p className="error">{errors.coursename?.message}</p>
 				</div>
 
-				<label htmlFor="id">ENTER COURSE CODE</label>
+				<label htmlFor="coursecode">Enter Course Code</label>
 				<div className="group">
 					<input
 						type="text"
-						placeholder="e.g., AFR-291"
-						maxLength={10}
+						id="coursecode"
 						{...register("coursecode")}
+						maxLength={10}
+						placeholder="e.g., AFR-291"
 					/>
-					<p className="error">{errors && errors.coursecode?.message}</p>
+					<p className="error">{errors.coursecode?.message}</p>
 				</div>
 
-				<label htmlFor="course-name">SELECT GROUP</label>
+				<label htmlFor="groupid">Select Group</label>
 				<div className="group">
 					<select
-						id="group"
+						id="groupid"
 						{...register("groupid")}
 					>
 						<option value="">--Select group--</option>
-						<option value="a">A</option>
-						<option value="b">B</option>
-						<option value="c">C</option>
-						<option value="d">D</option>
-						<option value="e">E</option>
-						<option value="f">F</option>
-						<option value="g">G</option>
+						{["A", "B", "C", "D", "E", "F", "G"].map((group) => (
+							<option
+								key={group}
+								value={group.toLowerCase()}
+							>
+								{group}
+							</option>
+						))}
 					</select>
-					<p className="error">{errors && errors.groupid?.message}</p>
+					<p className="error">{errors.groupid?.message}</p>
 				</div>
 
-				<label htmlFor="fullName">ENTER YOUR NAME</label>
+				<label htmlFor="fullname">Enter Your Name</label>
 				<div className="group">
 					<input
 						type="text"
+						id="fullname"
 						{...register("fullname")}
 						placeholder="e.g., John Doe"
 					/>
-					<p className="error">{errors && errors.fullname?.message}</p>
+					<p className="error">{errors.fullname?.message}</p>
 				</div>
 
 				<div className="group">
-					<button>Register Course</button>
+					{!loading ? (
+						<button type="submit">Register Course</button>
+					) : (
+						<div className="loader" />
+					)}
 				</div>
 			</form>
 		</main>
