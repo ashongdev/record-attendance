@@ -20,9 +20,8 @@ const StudentList = () => {
 	const getStudentList = async (courseCode: string, groupid: string) => {
 		try {
 			const res = await Axios.get(
-				`https://record-attendance.onrender.com/std/${
-					courseCode + "-" + groupid.toUpperCase()
-				}`
+				// `https://record-attendance.onrender.com/std/${
+				`http://localhost:4401/std/${courseCode + "-" + groupid.toUpperCase()}`
 			);
 			const data: StudentType[] = res.data;
 
@@ -39,16 +38,14 @@ const StudentList = () => {
 	const getLecturersLocation = async (courseCode: string, groupid: string) => {
 		try {
 			if (!courseCode && !groupid) {
-				console.log("🚀 ~ getStudentList ~ error:", "Invalid course code and groupid");
 				setEmpty("Register course to view enrolled students.");
 
 				return;
 			}
 
 			const res = await Axios.get(
-				`https://record-attendance.onrender.com/lec/${
-					courseCode + "-" + groupid.toUpperCase()
-				}`
+				// `https://record-attendance.onrender.com/lec/${
+				`http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
 			);
 
 			const { lat, long }: LocationType = res.data;
@@ -57,8 +54,6 @@ const StudentList = () => {
 			setLecturerLongitude(Number(long.toFixed(2)));
 		} catch (error) {
 			setEmpty("Could not get your location.");
-
-			console.log("🚀 ~ getStudentList ~ error:", error);
 		}
 	};
 

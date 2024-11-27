@@ -9,8 +9,8 @@
 }
 
 body {
-	font-family: Arial, sans-serif;
-	background-color: #f9f9f9;
+	font-family: "Poppins", sans-serif;
+	background-color: #1a1a1a;
 	color: #333;
 	line-height: 1.5;
 }
@@ -22,15 +22,17 @@ main {
 	gap: 2rem;
 	min-height: 100vh;
 	padding: 2rem;
+	margin-top: 100px;
 }
 
 form {
-	background-color: #fff;
+	background-color: #1a1a1a;
 	padding: 2rem;
 	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	border: 1px solid #333;
 	max-width: 400px;
 	width: 100%;
+	box-shadow: 0px 0px 6px rgb(51, 51, 51);
 }
 
 form .flex {
@@ -41,15 +43,17 @@ form .flex {
 
 label {
 	font-weight: bold;
-	color: #333;
+	color: #e5e5e5;
 }
 
 input,
 select {
+	background-color: #1a1a1a;
+	color: #999;
 	width: 100%;
 	padding: 0.75rem;
 	margin-top: 0.5rem;
-	border: 1px solid #ccc;
+	border: 1px solid #333;
 	border-radius: 4px;
 	font-size: 1rem;
 }
@@ -101,19 +105,20 @@ button:hover {
 
 /* Fieldset and Legend */
 fieldset {
-	border: 2px solid #007bff;
+	/* border: 2px solid #007bff; */
 	border-radius: 8px;
 	padding: 2rem;
 	width: 100%;
+	color: #999;
 	max-width: 500px;
-	background-color: #fff;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background-color: #1a1a1a;
+	box-shadow: 4px 4px 6px rgb(51, 51, 51);
 }
 
 legend {
 	font-size: 1.25rem;
 	font-weight: bold;
-	color: #007bff;
+	color: #e5e5e5;
 	padding: 0 0.5rem;
 }
 
@@ -156,59 +161,45 @@ a {
 
 /* Header */
 header {
-	background-color: #007bff;
+	background-color: #121212;
 	color: #fff;
 	padding: 1rem 2rem;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	position: fixed;
+	width: 100%;
+	top: 0;
+	right: 0;
+	left: 0;
 }
 
-header .flex {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-nav {
+header nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
-}
-
-nav a {
-	text-decoration: none;
-	color: #fff;
-}
-
-nav h1 {
-	font-size: 1.5rem;
-	font-weight: bold;
-}
-
-nav .right {
-	text-align: right;
 }
 
 nav .right p {
 	margin: 0;
 	font-size: 1rem;
 	line-height: 1.5;
-}
-
-nav .right p:first-of-type {
 	font-weight: bold;
+	text-transform: uppercase;
 }
 
 /* Table Styling */
 .display-list {
+	box-shadow: 4px 4px 6px rgb(37, 37, 37);
 	overflow-x: auto;
+	border: none;
 }
 
 table {
+	border: none;
 	width: 100%;
 	border-collapse: collapse;
-	background-color: #fff;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background-color: #121212;
+	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 	border-radius: 8px;
 	overflow: hidden;
 }
@@ -217,21 +208,23 @@ th,
 td {
 	padding: 0.75rem;
 	text-align: left;
-	border: 1px solid #ddd;
+	border: 1px solid #333;
+	/* border: none; */
 }
 
 th {
-	background-color: #007bff;
-	color: #fff;
+	background-color: #033581;
+	color: #e5e5e5;
 	font-weight: bold;
 }
 
-tr:nth-child(even) {
-	background-color: #f9f9f9;
+tr,
+thead {
+	color: #e5e5e5;
 }
 
-tr:hover {
-	background-color: #eaf4ff;
+tr:nth-child(even) {
+	background-color: #1a1a1a;
 }
 
 .empty {
@@ -266,21 +259,21 @@ tr:hover {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: #ffffff;
+	background-color: #121212;
 	padding: 1rem 1.5rem;
 	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 	margin-bottom: 1.5rem;
 	gap: 1rem;
 	max-width: 600px;
 	width: 100%;
+	box-shadow: 4px 4px 6px rgb(30, 30, 30);
 }
 
 .course-code,
 .group-id {
 	font-size: 1.1rem;
 	font-weight: bold;
-	color: #333;
+	color: #e5e5e5;
 	text-transform: uppercase;
 }
 
@@ -414,4 +407,59 @@ tr:hover {
 
 .close-btn:hover {
 	color: #e0e0e0;
+}
+
+/* Duplicate entry */
+.modal {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(107, 107, 107, 0.9);
+	min-height: 100vh;
+	height: 100%;
+	/* background-color: rgba(0, 0, 0, 0.1); */
+}
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	background-color: #333;
+	color: #e5e5e5;
+	padding: 2rem;
+
+	border-radius: 10px;
+}
+.details {
+	margin: 1rem;
+}
+.details div {
+	font-size: 0.8rem;
+}
+.details span {
+	font-weight: bold;
+}
+.container .message {
+	font-size: 0.8rem;
+	margin-top: 1rem;
+}
+button.no {
+	margin-right: 1rem;
+	background-color: #e63946;
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
+button.no:hover {
+	background-color: #ba3c46;
+}
+button.yes {
+	margin-right: 1rem;
+	/* background-color: #e63946; */
+	padding-left: 2rem;
+	padding-right: 2rem;
 }

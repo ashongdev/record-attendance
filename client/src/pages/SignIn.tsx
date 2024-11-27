@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import DuplicateEntryAlert from "../components/DuplicateEntryAlert";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
 import { SignInType } from "../exports/exports";
@@ -25,6 +26,7 @@ const SignIn = () => {
 	const [loading, setLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+	const [showDuplicateEntryAlert, setShowDuplicateEntryAlert] = useState(false);
 
 	// Get the geolocation of the lecturer
 	useEffect(() => {
@@ -55,57 +57,57 @@ const SignIn = () => {
 			lat: lecturerLatitude,
 		};
 
-		if (lecturerLongitude && lecturerLatitude) {
-			setLoading(true);
-			try {
-				const response = await Axios.post(
-					// Update the URL when deploying
-					// "http://localhost:4401/sign-in",
-					"https://record-attendance.onrender.com/sign-in",
-					newFormInput
-				);
+		// if (lecturerLongitude && lecturerLatitude) {
+		setLoading(true);
+		try {
+			const response = await Axios.post(
+				"http://localhost:4401/sign-in",
+				// "https://record-attendance.onrender.com/sign-in",
+				newFormInput
+			);
 
-				if (response.data) {
-					localStorage.setItem("lec", JSON.stringify(response.data));
-					setLoading(false);
-					setSuccessMessage(
-						"Course registered successfully! You can now view the enrolled students on the home page."
-					);
-					setShowSuccessMessage(true);
-					setTimeout(() => setShowSuccessMessage(false), 2000);
-				}
-			} catch (err) {
+			if (response.data) {
+				localStorage.setItem("lec", JSON.stringify(response.data));
 				setLoading(false);
-				setShowErrorMessage(true);
+				setSuccessMessage(
+					"Course registered successfully! You can now view the enrolled students on the home page."
+				);
+				setShowSuccessMessage(true);
+				setTimeout(() => setShowSuccessMessage(false), 2000);
+			}
+		} catch (err) {
+			setLoading(false);
+			setShowErrorMessage(true);
 
-				setTimeout(() => setShowErrorMessage(false), 3000);
+			setTimeout(() => setShowErrorMessage(false), 3000);
 
-				if (err instanceof AxiosError && err.response) {
-					const { data } = err.response;
-					const reqError: string = data;
+			if (err instanceof AxiosError && err.response) {
+				const { data } = err.response;
+				const reqError: string = data;
 
-					if (/double entry detected/i.test(reqError)) {
-						setError({
-							header: "Duplicate Entry.",
-							description: "An entry with the same details already exists.",
-						});
-					} else {
-						setError({
-							header: "Unexpected Error",
-							description: "An unexpected error occurred. Please try again later.",
-						});
-					}
+				if (/double entry detected/i.test(reqError)) {
+					setError({
+						header: "Duplicate Entry.",
+						description: "An entry with the same details already exists.",
+					});
+					setShowDuplicateEntryAlert(true);
 				} else {
 					setError({
 						header: "Unexpected Error",
 						description: "An unexpected error occurred. Please try again later.",
 					});
 				}
+			} else {
+				setError({
+					header: "Unexpected Error",
+					description: "An unexpected error occurred. Please try again later.",
+				});
 			}
-		} else {
-			setShowErrorMessage(true);
-			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
+		// } else {
+		// 	setShowErrorMessage(true);
+		// 	setTimeout(() => setShowErrorMessage(false), 3000);
+		// }
 	};
 
 	return (
@@ -121,6 +123,13 @@ const SignIn = () => {
 				<SuccessAlert
 					successMessage={successMessage}
 					setShowSuccessMessage={setShowSuccessMessage}
+				/>
+			)}
+
+			{showDuplicateEntryAlert && (
+				<DuplicateEntryAlert
+					showDuplicateEntryAlert={showDuplicateEntryAlert}
+					setShowDuplicateEntryAlert={setShowDuplicateEntryAlert}
 				/>
 			)}
 

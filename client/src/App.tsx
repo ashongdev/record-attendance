@@ -11,6 +11,26 @@ const App = () => {
 	// ! Create a sign in feature for a lecturer who wants to sign in again
 	// Also create a unique key for lecturers only to protect some routes
 
+	/**
+	 * :root {
+	--background-color: #121212;
+	--text-color: #e5e5e5;
+	--accent-color: #007bff;
+	--button-hover: #0056b3;
+	--card-background: #1a1a1a;
+	--form-background: #1a1a1a;
+	--input-background: #1a1a1a;
+	--input-border: #333;
+	--input-focus: #007bff;
+	--button-background: #007bff;
+	--button-hover: #0056b3;
+	--error-color: #e63946;
+}
+
+	 */
+	// ! When there is a duplicate entry ask is it is him.
+	// ! when I scroll up display course details on the nav bar
+
 	const { role } = useContextProvider();
 
 	function ProtectedRoute() {

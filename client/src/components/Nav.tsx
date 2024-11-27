@@ -1,18 +1,21 @@
 import { Link } from "react-router-dom";
-import useContextProvider from "../hooks/useContextProvider";
+import useFunctions from "../hooks/useFunctions";
 
 const Nav = () => {
-	const { role } = useContextProvider();
+	const { getStorageItem } = useFunctions();
+
+	const lec = getStorageItem("lec", null);
+	const role = getStorageItem("role", null);
 
 	return (
-		<header className="flex">
-			<nav className="flex">
+		<header>
+			<nav>
 				<Link to="/">
-					<h1 style={{ textTransform: "capitalize" }}>Welcome</h1>
+					<h1>Attendance</h1>
 				</Link>
 
 				<div className="right">
-					<p style={{ textTransform: "uppercase" }}>{!role ? "Unidentified." : role}</p>
+					<p>{!role ? "Unidentified." : role}</p>
 				</div>
 			</nav>
 		</header>

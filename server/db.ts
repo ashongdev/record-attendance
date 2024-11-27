@@ -3,13 +3,5 @@ import { Pool } from "pg";
 config();
 
 export const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
+	connectionString: `postgresql://${process.env.USER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.DBPORT}/${process.env.DATABASE}`,
 });
-
-// export const pool = new Pool({
-// 	host: process.env.HOST,
-// 	database: process.env.DATABASE,
-// 	port: Number(process.env.DBPORT),
-// 	user: process.env.DB_USER,
-// 	password: process.env.PASSWORD,
-// });
