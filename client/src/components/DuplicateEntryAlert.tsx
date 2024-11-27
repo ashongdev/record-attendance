@@ -31,7 +31,7 @@ const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert }) => {
 						className="no"
 						onClick={() => setShowDuplicateEntryAlert(false)}
 					>
-						No
+						No, it's not
 					</button>
 					<button
 						className="yes"

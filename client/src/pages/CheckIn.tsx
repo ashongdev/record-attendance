@@ -54,8 +54,9 @@ const CheckIn = () => {
 			},
 			(err) => {
 				setError({
-					header: "Location Error",
-					description: "Unable to retrieve your location. Please enable GPS.",
+					header: "Network Error",
+					description:
+						"Check your internet connection and allow access to your location to continue.",
 				});
 				setShowErrorMessage(true);
 				setTimeout(() => setShowErrorMessage(false), 3000);
@@ -69,8 +70,9 @@ const CheckIn = () => {
 	const formSubmit = async (data: CheckInType) => {
 		if (!newFormInput.lat || !newFormInput.long) {
 			setError({
-				header: "Location Error",
-				description: "Please allow location access before checking in.",
+				header: "Network Error",
+				description:
+					"Check your internet connection and allow access to your location to continue.",
 			});
 			setShowErrorMessage(true);
 			setTimeout(() => setShowErrorMessage(false), 3000);
@@ -93,7 +95,6 @@ const CheckIn = () => {
 		} catch (err) {
 			setLoading(false);
 			setShowErrorMessage(true);
-			setTimeout(() => setShowErrorMessage(false), 3000);
 
 			if (err instanceof AxiosError && err.response) {
 				const reqError: string = err.response.data;
@@ -120,6 +121,8 @@ const CheckIn = () => {
 					description: "Unable to connect to the server. Please try again.",
 				});
 			}
+
+			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
 	};
 
@@ -146,10 +149,9 @@ const CheckIn = () => {
 				<div className="group">
 					<label htmlFor="fullname">Full Name</label>
 					<input
-						type="text"
-						id="fullname"
+						type="name"
 						{...register("fullname")}
-						placeholder="e.g., John Doe"
+						placeholder="e.g., Miles Morales"
 					/>
 					<p className="error">{errors.fullname?.message}</p>
 				</div>

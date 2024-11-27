@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { LocationType, StudentType } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
-import useFunctions from "../hooks/useFunctions";
 
 const StudentList = () => {
 	const {
@@ -14,8 +13,8 @@ const StudentList = () => {
 		setLecturerLongitude,
 		lecturerLongitude,
 		lecturerLatitude,
+		lec,
 	} = useContextProvider();
-	const { getStorageItem } = useFunctions();
 
 	const getStudentList = async (courseCode: string, groupid: string) => {
 		try {
@@ -44,8 +43,10 @@ const StudentList = () => {
 			}
 
 			const res = await Axios.get(
-				// `https://record-attendance.onrender.com/lec/${
-				`http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
+				`https://record-attendance.onrender.com/lec/${
+					courseCode + "-" + groupid.toUpperCase()
+				}`
+				// `http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
 			);
 
 			const { lat, long }: LocationType = res.data;
@@ -57,8 +58,6 @@ const StudentList = () => {
 		}
 	};
 
-	const lec = getStorageItem("lec", null);
-
 	const [empty, setEmpty] = useState("");
 
 	const fireEvent = () => {
@@ -68,29 +67,23 @@ const StudentList = () => {
 		}
 	};
 	useEffect(() => {
-		// todo = also check lecturers name and coursename
 		fireEvent();
 	}, []);
 
 	return (
 		<main>
-			<div className="group-info">
-				<div className="course-code">{lec?.coursecode || "Course Code"}</div>
-				<div className="group-id">GROUP {lec?.groupid || "Unknown"}</div>
-
-				<button
-					className="refresh-btn"
-					onClick={fireEvent}
-				>
-					Refresh
-				</button>
-				{/* <button
-					className="delete-btn"
-					onClick={fireEvent}
-				>
-					Delete Today Records
-				</button> */}
-			</div>
+			{lec && (
+				<div className="group-info">
+					<button className="course-code">{lec?.coursecode || "Code"}</button>
+					<button className="group-id">{lec?.groupid || "Group"}</button>
+					<button
+						className="refresh-btn"
+						onClick={fireEvent}
+					>
+						REFRESH
+					</button>
+				</div>
+			)}
 
 			<div className="display-list">
 				<table>
@@ -99,8 +92,8 @@ const StudentList = () => {
 							<th>No.</th>
 							<th>FullName</th>
 							<th>Index No.</th>
-							<th>Time</th>
-							<th>Present</th>
+							<th className="time">Time</th>
+							<th className="present">Present</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -131,7 +124,7 @@ const StudentList = () => {
 				</table>
 			</div>
 
-			<div className="check-in">
+			<div className="register">
 				{!lec && (
 					<Link
 						to="/lec/register"

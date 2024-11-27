@@ -57,57 +57,61 @@ const SignIn = () => {
 			lat: lecturerLatitude,
 		};
 
-		// if (lecturerLongitude && lecturerLatitude) {
-		setLoading(true);
-		try {
-			const response = await Axios.post(
-				"http://localhost:4401/sign-in",
-				// "https://record-attendance.onrender.com/sign-in",
-				newFormInput
-			);
-
-			if (response.data) {
-				localStorage.setItem("lec", JSON.stringify(response.data));
-				setLoading(false);
-				setSuccessMessage(
-					"Course registered successfully! You can now view the enrolled students on the home page."
+		if (lecturerLongitude && lecturerLatitude) {
+			setLoading(true);
+			try {
+				const response = await Axios.post(
+					// "http://localhost:4401/sign-in",
+					"https://record-attendance.onrender.com/sign-in",
+					newFormInput
 				);
-				setShowSuccessMessage(true);
-				setTimeout(() => setShowSuccessMessage(false), 2000);
-			}
-		} catch (err) {
-			setLoading(false);
-			setShowErrorMessage(true);
 
-			setTimeout(() => setShowErrorMessage(false), 3000);
+				if (response.data) {
+					localStorage.setItem("lec", JSON.stringify(response.data));
+					setLoading(false);
+					setSuccessMessage(
+						"Course registered successfully! You can now view the enrolled students on the home page."
+					);
+					setShowSuccessMessage(true);
+					setTimeout(() => setShowSuccessMessage(false), 2000);
+				}
+			} catch (err) {
+				setLoading(false);
+				setShowErrorMessage(true);
 
-			if (err instanceof AxiosError && err.response) {
-				const { data } = err.response;
-				const reqError: string = data;
+				if (err instanceof AxiosError && err.response) {
+					const { data } = err.response;
+					const reqError: string = data;
 
-				if (/double entry detected/i.test(reqError)) {
-					setError({
-						header: "Duplicate Entry.",
-						description: "An entry with the same details already exists.",
-					});
-					setShowDuplicateEntryAlert(true);
+					if (/double entry detected/i.test(reqError)) {
+						setError({
+							header: "Duplicate Entry.",
+							description: "An entry with the same details already exists.",
+						});
+						setShowDuplicateEntryAlert(true);
+					} else {
+						setError({
+							header: "Unexpected Error",
+							description: "An unexpected error occurred. Please try again later.",
+						});
+					}
 				} else {
 					setError({
 						header: "Unexpected Error",
 						description: "An unexpected error occurred. Please try again later.",
 					});
 				}
-			} else {
-				setError({
-					header: "Unexpected Error",
-					description: "An unexpected error occurred. Please try again later.",
-				});
+				setTimeout(() => setShowErrorMessage(false), 3000);
 			}
+		} else {
+			setError({
+				header: "Network Error",
+				description:
+					"Check your internet connection and allow access to your location to continue.",
+			});
+			setShowErrorMessage(true);
+			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
-		// } else {
-		// 	setShowErrorMessage(true);
-		// 	setTimeout(() => setShowErrorMessage(false), 3000);
-		// }
 	};
 
 	return (

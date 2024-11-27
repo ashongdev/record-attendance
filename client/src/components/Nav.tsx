@@ -4,7 +4,6 @@ import useFunctions from "../hooks/useFunctions";
 const Nav = () => {
 	const { getStorageItem } = useFunctions();
 
-	const lec = getStorageItem("lec", null);
 	const role = getStorageItem("role", null);
 
 	return (

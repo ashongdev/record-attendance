@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import Footer from "./components/Footer";
 import Nav from "./components/Nav";
 import useContextProvider from "./hooks/useContextProvider";
 import CheckIn from "./pages/CheckIn";
@@ -31,7 +32,7 @@ const App = () => {
 	// ! When there is a duplicate entry ask is it is him.
 	// ! when I scroll up display course details on the nav bar
 
-	const { role } = useContextProvider();
+	const { role, lec } = useContextProvider();
 
 	function ProtectedRoute() {
 		if (role === "Lecturer") {
@@ -44,10 +45,13 @@ const App = () => {
 	return (
 		<>
 			<Nav />
+
 			<Routes>
 				<Route
 					path="/"
-					element={role ? <ProtectedRoute /> : <Landing />}
+					element={
+						role ? <ProtectedRoute /> : !lec ? <Landing /> : <Navigate to="/lec/home" />
+					}
 				/>
 				<Route
 					path="/std"
@@ -125,6 +129,8 @@ const App = () => {
 					element={<h1>This route is not found</h1>}
 				/>
 			</Routes>
+
+			<Footer />
 		</>
 	);
 };

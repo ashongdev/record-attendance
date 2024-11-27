@@ -18,6 +18,16 @@ interface ContextType {
 	lecturerLongitude: number;
 	setLecturerLongitude: Dispatch<SetStateAction<number>>;
 	role: "Lecturer" | "Student";
+	lec: {
+		coursecode: string;
+		coursename: string;
+		fullname: string;
+		groupid: string;
+		id: string;
+		lat: number;
+		long: number;
+		time: Date;
+	};
 }
 
 export type CheckInType = {

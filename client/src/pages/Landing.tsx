@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SuccessAlert from "../components/SuccessAlert";
 import useContextProvider from "../hooks/useContextProvider";
 import "../styles/Landing.css";
@@ -10,19 +10,15 @@ const Landing = () => {
 
 	const { role } = useContextProvider();
 
-	useEffect(() => {
-		if (role === "Lecturer") {
-			setTimeout(() => {
-				window.location.reload();
-			}, 2000);
-		} else if (role === "Student") {
-			setTimeout(() => {
-				window.location.reload();
-			}, 2000);
-		}
-	}, [role]);
-	const [redirecting, setRedirecting] = useState(false);
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+	const handleClick = (role: "Lecturer" | "Student") => {
+		setRole(role);
+		setShowSuccessMessage(true);
+		setTimeout(() => {
+			window.location.reload();
+		}, 2000);
+	};
 
 	return (
 		<div className="landing-page">
@@ -38,19 +34,13 @@ const Landing = () => {
 			<div className="roles">
 				<button
 					className="role-button lecturer"
-					onClick={() => {
-						setRole("Lecturer");
-						setShowSuccessMessage(true);
-					}}
+					onClick={() => handleClick("Lecturer")}
 				>
 					I am a Lecturer
 				</button>
 				<button
 					className="role-button student"
-					onClick={() => {
-						setShowSuccessMessage(true);
-						setRole("Student");
-					}}
+					onClick={() => handleClick("Student")}
 				>
 					I am a Student
 				</button>
