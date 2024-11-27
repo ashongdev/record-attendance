@@ -74,9 +74,9 @@ const CheckIn = () => {
 				<label htmlFor="full-name">ENTER YOUR FULL NAME</label>
 				<div className="group">
 					<input
-						type="text"
+						type="name"
 						{...register("fullname")}
-						placeholder="e.g., African Studies"
+						placeholder="e.g., Miles Morales"
 					/>
 					<p className="error">{errors && errors.fullname?.message}</p>
 				</div>
@@ -130,6 +130,10 @@ const CheckIn = () => {
 					<button>Check In</button>
 				</div>
 			</form>
+
+			<div className="copyright">
+    <p>&copy; 2024 BIT GROUP E GROUP 6 | All rights reserved.</p>
+  </div>
 		</main>
 	);
 };

@@ -99,8 +99,8 @@ const StudentList = () => {
 							<th>No.</th>
 							<th>FullName</th>
 							<th>Index No.</th>
-							<th>Time</th>
-							<th>Present</th>
+							<th className="time">Time</th>
+							<th className="present">Present</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -141,6 +141,10 @@ const StudentList = () => {
 					</Link>
 				)}
 			</div>
+
+			<div className="copyright">
+    <p>&copy; 2024 BIT GROUP E GROUP 6 | All rights reserved.</p>
+  </div>
 		</main>
 	);
 };
