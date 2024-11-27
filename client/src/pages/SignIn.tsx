@@ -2,6 +2,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import DuplicateEntryAlert from "../components/DuplicateEntryAlert";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
 import { SignInType } from "../exports/exports";
@@ -9,13 +10,8 @@ import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
 
 const SignIn = () => {
-	const {
-		setRegistered,
-		setLecturerLatitude,
-		setLecturerLongitude,
-		lecturerLongitude,
-		lecturerLatitude,
-	} = useContextProvider();
+	const { setLecturerLatitude, setLecturerLongitude, lecturerLongitude, lecturerLatitude } =
+		useContextProvider();
 
 	const {
 		register,
@@ -30,6 +26,7 @@ const SignIn = () => {
 	const [loading, setLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+	const [showDuplicateEntryAlert, setShowDuplicateEntryAlert] = useState(false);
 
 	// Get the geolocation of the lecturer
 	useEffect(() => {
@@ -64,14 +61,12 @@ const SignIn = () => {
 			setLoading(true);
 			try {
 				const response = await Axios.post(
-					// Update the URL when deploying
 					// "http://localhost:4401/sign-in",
 					"https://record-attendance.onrender.com/sign-in",
 					newFormInput
 				);
 
 				if (response.data) {
-					setRegistered(true);
 					localStorage.setItem("lec", JSON.stringify(response.data));
 					setLoading(false);
 					setSuccessMessage(
@@ -84,8 +79,6 @@ const SignIn = () => {
 				setLoading(false);
 				setShowErrorMessage(true);
 
-				setTimeout(() => setShowErrorMessage(false), 3000);
-
 				if (err instanceof AxiosError && err.response) {
 					const { data } = err.response;
 					const reqError: string = data;
@@ -95,6 +88,7 @@ const SignIn = () => {
 							header: "Duplicate Entry.",
 							description: "An entry with the same details already exists.",
 						});
+						setShowDuplicateEntryAlert(true);
 					} else {
 						setError({
 							header: "Unexpected Error",
@@ -107,8 +101,14 @@ const SignIn = () => {
 						description: "An unexpected error occurred. Please try again later.",
 					});
 				}
+				setTimeout(() => setShowErrorMessage(false), 3000);
 			}
 		} else {
+			setError({
+				header: "Network Error",
+				description:
+					"Check your internet connection and allow access to your location to continue.",
+			});
 			setShowErrorMessage(true);
 			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
@@ -127,6 +127,13 @@ const SignIn = () => {
 				<SuccessAlert
 					successMessage={successMessage}
 					setShowSuccessMessage={setShowSuccessMessage}
+				/>
+			)}
+
+			{showDuplicateEntryAlert && (
+				<DuplicateEntryAlert
+					showDuplicateEntryAlert={showDuplicateEntryAlert}
+					setShowDuplicateEntryAlert={setShowDuplicateEntryAlert}
 				/>
 			)}
 

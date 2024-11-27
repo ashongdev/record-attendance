@@ -13,14 +13,21 @@ export interface StudentType {
 interface ContextType {
 	studentList: StudentType[] | [];
 	setStudentList: Dispatch<SetStateAction<StudentType[] | []>>;
-	registered: boolean;
-	setRegistered: Dispatch<SetStateAction<boolean>>;
 	lecturerLatitude: number;
 	setLecturerLatitude: Dispatch<SetStateAction<number>>;
 	lecturerLongitude: number;
 	setLecturerLongitude: Dispatch<SetStateAction<number>>;
-	// key: string;
-	// keyAuthorized: boolean;
+	role: "Lecturer" | "Student";
+	lec: {
+		coursecode: string;
+		coursename: string;
+		fullname: string;
+		groupid: string;
+		id: string;
+		lat: number;
+		long: number;
+		time: Date;
+	};
 }
 
 export type CheckInType = {

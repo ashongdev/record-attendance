@@ -9,6 +9,7 @@
 	color: #fff;
 	font-family: "Arial", sans-serif;
 	text-align: center;
+	width: 100%;
 }
 
 .landing-page h1 {
@@ -16,7 +17,7 @@
 	margin-bottom: 1rem;
 }
 
-.landing-page p {
+.landing-page span {
 	font-size: 1.2rem;
 	margin-bottom: 2rem;
 }
@@ -56,4 +57,21 @@
 .role-button:active {
 	transform: translateY(1px);
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 400px) {
+	.landing-page h1 {
+		font-size: 2rem;
+	}
+	.landing-page span {
+		font-size: 1rem;
+	}
+	.roles {
+		gap: 1rem;
+		margin: 0 2rem;
+	}
+	.role-button {
+		font-size: 0.8rem;
+		padding: 0.5rem 1rem;
+	}
 }

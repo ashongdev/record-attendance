@@ -4,25 +4,17 @@ import useFunctions from "../hooks/useFunctions";
 const Nav = () => {
 	const { getStorageItem } = useFunctions();
 
-	const lec = getStorageItem("lec", null);
+	const role = getStorageItem("role", null);
 
 	return (
-		<header className="flex">
-			<nav className="flex">
-				<Link to={lec?.coursecode && "/lec/home"}>
-					<h1 style={{ textTransform: "capitalize" }}>
-						{/* {lec?.coursecode ? lec?.coursecode : "Course Name"} - Attendance */}
-						Home
-					</h1>
+		<header>
+			<nav>
+				<Link to="/">
+					<h1>Attendance</h1>
 				</Link>
 
 				<div className="right">
-					<p style={{ textTransform: "capitalize" }}>
-						{/* {lec?.coursename ? lec?.coursename : "Course Name"} */}
-					</p>
-					<p style={{ textTransform: "capitalize" }}>
-						{/* {lec?.fullname ? lec?.fullname : "Lecturer Name"} */}
-					</p>
+					<p>{!role ? "Unidentified." : role}</p>
 				</div>
 			</nav>
 		</header>

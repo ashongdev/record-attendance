@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-/* Reset and Base Styles */
 * {
 	font-family: "Poppins", sans-serif;
 	margin: 0;
@@ -9,7 +8,9 @@
 }
 
 body {
-	font-family: Arial, sans-serif;
+	font-family: "Poppins", sans-serif;
+	background-color: #1a1a1a;
+	font-family: "Poppins", sans-serif;
 	background-color: #f9f9f9;
 	color: #333;
 	line-height: 1.5;
@@ -19,18 +20,25 @@ main {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 2rem;
-	min-height: 100vh;
-	padding: 2rem;
+	margin-top: 6.25rem;
+	overflow: hidden;
+	box-sizing: border-box;
 }
 
 form {
-	background-color: #fff;
+	background-color: #1a1a1a;
 	padding: 2rem;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	max-width: 400px;
-	width: 100%;
+	border-radius: 0.5rem;
+	border: 0.0625rem solid #333;
+	width: 40%;
+	box-shadow: 0rem 0rem 0.375rem rgb(51, 51, 51);
+	padding: 1.5rem;
+	box-sizing: border-box;
+}
+@media (max-width: 820px) {
+	form {
+		width: 50%;
+	}
 }
 
 form .flex {
@@ -41,16 +49,18 @@ form .flex {
 
 label {
 	font-weight: bold;
-	color: #333;
+	color: #e5e5e5;
 }
 
 input,
 select {
+	background-color: #1a1a1a;
+	color: #999;
 	width: 100%;
 	padding: 0.75rem;
 	margin-top: 0.5rem;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+	border: 0.0625rem solid #333;
+	border-radius: 0.25rem;
 	font-size: 1rem;
 }
 
@@ -58,23 +68,47 @@ input:focus,
 select:focus {
 	border-color: #007bff;
 	outline: none;
-	box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+	box-shadow: 0 0 0.3125rem rgba(0, 123, 255, 0.5);
 }
 
-button {
-	background-color: #007bff;
+.close-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: transparent;
 	color: #fff;
-	padding: 0.5rem;
+	padding: 0.5rem 0.2rem;
 	font-size: 0.8rem;
 	font-weight: bold;
 	border: none;
-	border-radius: 4px;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	width: 3rem;
+	transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+	background-color: #302e3b;
+}
+
+button,
+.btn {
+	background-color: #033581;
+	color: #fff;
+	padding: 0.5rem 1.5rem;
+	font-family: "Poppins", sans-serif;
+	font-size: 0.9rem;
+	font-weight: bold;
+	border: none;
+	width: 100%;
+	border-radius: 0.1875rem;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
 }
 
-button:hover {
-	background-color: #0056b3;
+button:hover,
+.btn:hover {
+	background-color: #007bff;
 }
 
 .error {
@@ -85,20 +119,22 @@ button:hover {
 
 /* Fieldset and Legend */
 fieldset {
-	border: 2px solid #007bff;
-	border-radius: 8px;
+	border-radius: 0.5rem;
 	padding: 2rem;
 	width: 100%;
-	max-width: 500px;
-	background-color: #fff;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	color: #999;
+	max-width: 31.25rem;
+	background-color: #1a1a1a;
+	box-shadow: 0.25rem 0.25rem 0.375rem rgb(51, 51, 51);
+	margin-bottom: 1rem;
 }
 
 legend {
-	font-size: 1.25rem;
-	font-weight: bold;
-	color: #007bff;
-	padding: 0 0.5rem;
+	font-size: 1rem;
+	color: #fff;
+	background-color: #1a1a1a;
+	border-radius: 0.1875rem;
+	padding: 0 1rem;
 }
 
 .group {
@@ -109,8 +145,9 @@ legend {
 }
 
 .cont {
-	margin-top: 1rem;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .cont .margin-right {
@@ -140,60 +177,47 @@ a {
 
 /* Header */
 header {
-	background-color: #007bff;
+	background-color: #121212;
 	color: #fff;
 	padding: 1rem 2rem;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+	position: fixed;
+	width: 100%;
+	top: 0;
+	right: 0;
+	left: 0;
 }
 
-header .flex {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-nav {
+header nav {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;
-}
-
-nav a {
-	text-decoration: none;
-	color: #fff;
-}
-
-nav h1 {
-	font-size: 1.5rem;
-	font-weight: bold;
-}
-
-nav .right {
-	text-align: right;
 }
 
 nav .right p {
 	margin: 0;
 	font-size: 1rem;
 	line-height: 1.5;
-}
-
-nav .right p:first-of-type {
 	font-weight: bold;
+	text-transform: uppercase;
 }
 
-/* Table Styling */
 .display-list {
+	box-shadow: 0.25rem 0.25rem 0.375rem rgb(37, 37, 37);
+	width: 80%;
 	overflow-x: auto;
+	border: none;
+	border-radius: 0.625rem;
+	min-width: 14.375rem;
 }
 
 table {
+	border: none;
 	width: 100%;
 	border-collapse: collapse;
-	background-color: #fff;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
+	background-color: #121212;
+	border-radius: 0.5rem;
 	overflow: hidden;
 }
 
@@ -201,21 +225,22 @@ th,
 td {
 	padding: 0.75rem;
 	text-align: left;
-	border: 1px solid #ddd;
+	border: 0.0625rem solid #333;
 }
 
 th {
-	background-color: #007bff;
-	color: #fff;
+	background-color: #033581;
+	color: #e5e5e5;
 	font-weight: bold;
 }
 
-tr:nth-child(even) {
-	background-color: #f9f9f9;
+tr,
+thead {
+	color: #e5e5e5;
 }
 
-tr:hover {
-	background-color: #eaf4ff;
+tr:nth-child(even) {
+	background-color: #1a1a1a;
 }
 
 .empty {
@@ -231,76 +256,29 @@ tr:hover {
 	text-align: center;
 }
 
-.check-in .btn {
-	display: inline-block;
-	background-color: #28a745;
-	color: #fff;
-	padding: 0.75rem 1.5rem;
-	text-decoration: none;
-	font-weight: bold;
-	border-radius: 4px;
-	transition: background-color 0.3s ease;
-}
-
-.check-in .btn:hover {
-	background-color: #1c7430;
+.register {
+	margin: 3rem 0;
 }
 
 .group-info {
 	display: flex;
-	justify-content: space-between;
 	align-items: center;
-	background-color: #ffffff;
-	padding: 1rem 1.5rem;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	margin-bottom: 1.5rem;
+	justify-content: center;
+	width: 50%;
+	min-width: 50%;
 	gap: 1rem;
-	max-width: 600px;
-	width: 100%;
+	margin-bottom: 2rem;
 }
 
 .course-code,
-.group-id {
-	font-size: 1.1rem;
-	font-weight: bold;
-	color: #333;
-	text-transform: uppercase;
-}
-
-.btn {
-	background-color: #007bff;
-	color: #fff;
-	padding: 0.6rem 1.2rem;
-	font-size: 1rem;
-	font-weight: bold;
-	border: none;
-	border-radius: 4px;
-	cursor: pointer;
-	transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
+.group-id,
 .refresh-btn {
-	background-color: #007bff;
-}
-
-.delete-btn {
-	background-color: red;
-}
-
-.delete-btn:hover {
-	background-color: #b32d00;
-	transform: scale(1.05);
-}
-
-.delete-btn:active {
-	background-color: #ef2a2abe;
-	transform: scale(1);
-}
-
-.refresh-btn:hover {
-	background-color: #0056b3;
-	transform: scale(1.05);
+	font-size: 1.1rem;
+	text-transform: uppercase;
+	font-size: 0.8rem;
+	text-wrap: none;
+	white-space: nowrap;
+	background-color: #121212;
 }
 
 .refresh-btn:active {
@@ -308,10 +286,32 @@ tr:hover {
 	transform: scale(1);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+footer {
+	width: 100%;
+	text-align: center;
+	padding: 1.5625rem 0;
+	font-weight: 300;
+	font-size: 0.9375rem;
+}
+
+@media (max-width: 48rem) {
+	nav h1 {
+		text-align: center;
+	}
+
+	nav .right p {
+		display: none;
+	}
+
 	.group {
 		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.cont {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	th,
@@ -319,24 +319,103 @@ tr:hover {
 		font-size: 0.875rem;
 	}
 
-	button {
-		padding: 0.5rem 0.75rem;
+	th:nth-child(4),
+	td:nth-child(4) {
+		display: none;
+	}
+
+	form {
+		min-width: 21.875rem;
+	}
+
+	.check-in .btn {
+		padding: 0.75rem 1.5rem;
 		font-size: 0.875rem;
+	}
+
+	.display-list {
+		overflow-x: auto;
 	}
 }
 
-/* New */
+@media (max-width: 25rem) {
+	main {
+		margin-top: 5rem;
+	}
+
+	nav h1 {
+		font-size: 1.2rem;
+		text-align: center;
+	}
+
+	form {
+		padding: 1rem;
+		min-width: 15.625rem;
+	}
+
+	input,
+	select {
+		padding: 0.5rem;
+		font-size: 0.75rem;
+	}
+
+	button {
+		width: 100%;
+		font-size: 0.7rem;
+		letter-spacing: 0.1rem;
+		padding: 0.5rem;
+	}
+
+	th,
+	td {
+		font-size: 0.75rem;
+		padding: 0.5rem;
+	}
+
+	th:nth-child(4),
+	th:nth-child(5),
+	td:nth-child(4),
+	td:nth-child(5) {
+		display: none;
+	}
+
+	fieldset {
+		padding: 1rem;
+	}
+
+	.group-info {
+		align-items: center;
+		font-size: 0.75rem;
+	}
+	.group-info div {
+		padding: 0.5rem;
+	}
+	.group-id,
+	.course-code {
+		font-size: 0.5rem;
+	}
+
+	.check-in .btn {
+		padding: 0.5rem 1rem;
+		font-size: 0.75rem;
+	}
+
+	footer p {
+		font-size: 0.7rem;
+	}
+}
+
 .error-alert-container {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 	width: 25rem;
 	z-index: 50;
-	position: absolute;
+	position: fixed;
 	top: 2rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
 	.error-alert-container {
 		width: 20rem;
 		font-size: 0.875rem;
@@ -356,7 +435,13 @@ tr:hover {
 	display: flex;
 	gap: 0.5rem;
 }
-
+.alert-title {
+	color: white;
+	font-weight: bold;
+}
+.alert-description {
+	font-size: 0.8rem;
+}
 .icon-container {
 	color: #d65563;
 	padding: 0.25rem;
@@ -365,25 +450,72 @@ tr:hover {
 }
 
 .icon {
-	width: 1.5rem;
-	height: 1.5rem;
+	width: 1.2rem;
+	height: 1.2rem;
 }
 
 .alert-text {
 	font-size: 0.875rem;
 	color: #cccccc;
+	text-align: left;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	flex-direction: column;
 }
 
-.close-btn {
-	color: #ffffff;
+.modal {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(107, 107, 107, 0.9);
+	min-height: 100vh;
+	height: 100%;
+}
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	background-color: #333;
+	color: #e5e5e5;
+	padding: 2rem;
+
+	border-radius: 0.625rem;
+}
+.details {
+	margin: 1rem;
+}
+.details div {
+	font-size: 0.8rem;
+}
+.details span {
 	font-weight: bold;
-	font-size: 1.25rem;
-	background-color: transparent;
-	border: none;
-	cursor: pointer;
-	transition: color 0.3s;
 }
-
-.close-btn:hover {
-	color: #e0e0e0;
+.container .message {
+	font-size: 0.8rem;
+	margin-top: 1rem;
+	text-align: center;
+}
+.buttons {
+	display: flex;
+}
+button.no {
+	margin-right: 1rem;
+	background-color: #e63946;
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
+button.no:hover {
+	background-color: #ba3c46;
+}
+button.yes {
+	margin-right: 1rem;
+	padding-left: 2rem;
+	padding-right: 2rem;
 }

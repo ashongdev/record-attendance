@@ -8,7 +8,8 @@ const Context = ({ children }: { children: ReactNode }) => {
 	const [studentList, setStudentList] = useState<StudentType[] | []>(
 		getStorageItem("studentList", [])
 	);
-	const [registered, setRegistered] = useState(getStorageItem("lec", false));
+	const role: "Lecturer" | "Student" = getStorageItem("role", null);
+	const lec = getStorageItem("lec", null);
 
 	const [lecturerLongitude, setLecturerLongitude] = useState(0);
 	const [lecturerLatitude, setLecturerLatitude] = useState(0);
@@ -18,14 +19,12 @@ const Context = ({ children }: { children: ReactNode }) => {
 			value={{
 				studentList,
 				setStudentList,
-				setRegistered,
-				registered,
 				lecturerLongitude,
 				setLecturerLongitude,
 				lecturerLatitude,
 				setLecturerLatitude,
-				// key,
-				// keyAuthorized,
+				role,
+				lec,
 			}}
 		>
 			{children}
