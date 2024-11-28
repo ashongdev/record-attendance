@@ -5,11 +5,11 @@ import { useForm } from "react-hook-form";
 import DuplicateEntryAlert from "../components/DuplicateEntryAlert";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
-import { SignInType } from "../exports/exports";
+import { RegisterType } from "../exports/exports";
 import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
 
-const SignIn = () => {
+const RegisterCourse = () => {
 	const { setLecturerLatitude, setLecturerLongitude, lecturerLongitude, lecturerLatitude } =
 		useContextProvider();
 
@@ -48,8 +48,22 @@ const SignIn = () => {
 		}
 	}, []);
 
+	const [data, setData] = useState<RegisterType | null>(null);
 	// Handle form submission
-	const formSubmit = async (data: SignInType) => {
+	const formSubmit = async (data: RegisterType) => {
+		setData(data);
+		if (!lecturerLongitude && lecturerLatitude!) {
+			setError({
+				header: "Network Error",
+				description:
+					"Check your internet connection and allow access to your location to continue.",
+			});
+			setShowErrorMessage(true);
+			setTimeout(() => setShowErrorMessage(false), 3000);
+
+			return;
+		}
+
 		const newFormInput = {
 			...data,
 			time: new Date(),
@@ -57,59 +71,51 @@ const SignIn = () => {
 			lat: lecturerLatitude,
 		};
 
-		if (lecturerLongitude && lecturerLatitude) {
-			setLoading(true);
-			try {
-				const response = await Axios.post(
-					// "http://localhost:4401/sign-in",
-					"https://record-attendance.onrender.com/sign-in",
-					newFormInput
-				);
+		setLoading(true);
+		try {
+			const response = await Axios.post(
+				"http://localhost:4401/register-course",
+				// "https://record-attendance.onrender.com/register-course",
+				newFormInput
+			);
 
-				if (response.data) {
-					localStorage.setItem("lec", JSON.stringify(response.data));
-					setLoading(false);
-					setSuccessMessage(
-						"Course registered successfully! You can now view the enrolled students on the home page."
-					);
-					setShowSuccessMessage(true);
-					setTimeout(() => setShowSuccessMessage(false), 2000);
-				}
-			} catch (err) {
+			if (response.data) {
+				localStorage.setItem("lec", JSON.stringify(response.data));
 				setLoading(false);
-				setShowErrorMessage(true);
+				setSuccessMessage(
+					"Course registered successfully! You can now view the enrolled students on the home page."
+				);
+				setShowSuccessMessage(true);
+				setTimeout(() => setShowSuccessMessage(false), 2000);
+			}
+		} catch (err) {
+			setLoading(false);
+			setShowErrorMessage(true);
 
-				if (err instanceof AxiosError && err.response) {
-					const { data } = err.response;
-					const reqError: string = data;
+			if (err instanceof AxiosError && err.response) {
+				const { data } = err.response;
+				const reqError: string = data;
 
-					if (/double entry detected/i.test(reqError)) {
-						setError({
-							header: "Duplicate Entry.",
-							description: "An entry with the same details already exists.",
-						});
-						setShowDuplicateEntryAlert(true);
-					} else {
-						setError({
-							header: "Unexpected Error",
-							description: "An unexpected error occurred. Please try again later.",
-						});
-					}
+				if (/double entry detected/i.test(reqError)) {
+					setError({
+						header: "Duplicate Entry.",
+						description: "An entry with the same details already exists.",
+					});
+					setShowDuplicateEntryAlert(true);
 				} else {
+					console.log(err);
 					setError({
 						header: "Unexpected Error",
 						description: "An unexpected error occurred. Please try again later.",
 					});
 				}
-				setTimeout(() => setShowErrorMessage(false), 3000);
+			} else {
+				console.log(err);
+				setError({
+					header: "Unexpected Error",
+					description: "An unexpected error occurred. Please try again later.",
+				});
 			}
-		} else {
-			setError({
-				header: "Network Error",
-				description:
-					"Check your internet connection and allow access to your location to continue.",
-			});
-			setShowErrorMessage(true);
 			setTimeout(() => setShowErrorMessage(false), 3000);
 		}
 	};
@@ -132,7 +138,7 @@ const SignIn = () => {
 
 			{showDuplicateEntryAlert && (
 				<DuplicateEntryAlert
-					showDuplicateEntryAlert={showDuplicateEntryAlert}
+					data={data}
 					setShowDuplicateEntryAlert={setShowDuplicateEntryAlert}
 				/>
 			)}
@@ -206,4 +212,4 @@ const SignIn = () => {
 	);
 };
 
-export default SignIn;
+export default RegisterCourse;

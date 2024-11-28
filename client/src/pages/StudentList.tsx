@@ -2,7 +2,7 @@ import Axios from "axios";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { LocationType, StudentType } from "../exports/exports";
+import { Entity, LocationType } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 
 const StudentList = () => {
@@ -19,10 +19,12 @@ const StudentList = () => {
 	const getStudentList = async (courseCode: string, groupid: string) => {
 		try {
 			const res = await Axios.get(
-				// `https://record-attendance.onrender.com/std/${
-				`http://localhost:4401/std/${courseCode + "-" + groupid.toUpperCase()}`
+				`https://record-attendance.onrender.com/lec/${
+					// `http://localhost:4401/lec/${
+					courseCode + "-" + groupid.toUpperCase()
+				}`
 			);
-			const data: StudentType[] = res.data;
+			const data: Entity[] = res.data;
 
 			if (data.length >= 1) {
 				setStudentList(data);
@@ -30,7 +32,7 @@ const StudentList = () => {
 				setEmpty("No match found for search.");
 			}
 		} catch (error) {
-			console.log("🚀 ~ getStudentList ~ error:", error);
+			console.log("error:", error);
 		}
 	};
 
@@ -75,7 +77,7 @@ const StudentList = () => {
 			{lec && (
 				<div className="group-info">
 					<button className="course-code">{lec?.coursecode || "Code"}</button>
-					<button className="group-id">{lec?.groupid || "Group"}</button>
+					<button className="group-id">Group {lec?.groupid}</button>
 					<button
 						className="refresh-btn"
 						onClick={fireEvent}

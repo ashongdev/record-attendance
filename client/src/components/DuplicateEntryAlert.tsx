@@ -1,11 +1,21 @@
 import { Dispatch, FC, SetStateAction } from "react";
+import { RegisterType } from "../exports/exports";
 
 interface Props {
-	showDuplicateEntryAlert: boolean;
+	data: RegisterType | null;
 	setShowDuplicateEntryAlert: Dispatch<SetStateAction<boolean>>;
 }
 
-const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert }) => {
+const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) => {
+	const getDetails = async () => {
+		localStorage.setItem("lec", JSON.stringify(data));
+		setShowDuplicateEntryAlert(false);
+
+		setTimeout(() => {
+			window.location.href = "/";
+		}, 1500);
+	};
+
 	return (
 		<div className="modal">
 			<div className="container">
@@ -35,7 +45,7 @@ const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert }) => {
 					</button>
 					<button
 						className="yes"
-						onClick={() => setShowDuplicateEntryAlert(false)}
+						onClick={getDetails}
 					>
 						Yes, it's me
 					</button>

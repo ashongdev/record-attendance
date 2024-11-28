@@ -1,6 +1,7 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 
-export interface StudentType {
+export interface Entity {
+	id: string;
 	fullname: string;
 	indexnumber: string;
 	groupid: string;
@@ -10,38 +11,26 @@ export interface StudentType {
 	lat: number;
 }
 
+export interface Lecturertype extends Omit<Entity, "indexnumber"> {}
+
 interface ContextType {
-	studentList: StudentType[] | [];
-	setStudentList: Dispatch<SetStateAction<StudentType[] | []>>;
+	studentList: Entity[] | [];
+	setStudentList: Dispatch<SetStateAction<Entity[] | []>>;
 	lecturerLatitude: number;
 	setLecturerLatitude: Dispatch<SetStateAction<number>>;
 	lecturerLongitude: number;
 	setLecturerLongitude: Dispatch<SetStateAction<number>>;
 	role: "Lecturer" | "Student";
-	lec: {
-		coursecode: string;
-		coursename: string;
-		fullname: string;
-		groupid: string;
-		id: string;
-		lat: number;
-		long: number;
-		time: Date;
-	};
+	lec: Lecturertype;
 }
 
-export type CheckInType = {
-	indexnumber: string;
-	groupid: string;
-	fullname: string;
-	coursecode: string;
-};
-
-export type SignInType = {
-	coursecode: string | null;
+export interface RegisterType extends Omit<Entity, "time" | "long" | "lat" | "indexnumber" | "id"> {
 	coursename: string | null;
-	fullname: string | null;
-};
-export const ContextProvider = createContext<ContextType | undefined>(undefined);
+}
 
-export type LocationType = { lat: number; long: number };
+export interface CheckInType extends Omit<Entity, "time" | "long" | "lat"> {}
+
+export interface LocationType
+	extends Omit<Entity, "time" | "indexnumber" | "groupid" | "fullname" | "coursecode"> {}
+
+export const ContextProvider = createContext<ContextType | undefined>(undefined);
