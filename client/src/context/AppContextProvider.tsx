@@ -1,11 +1,11 @@
 import { ReactNode, useState } from "react";
-import { ContextProvider, StudentType } from "../exports/exports";
+import { ContextProvider, Entity } from "../exports/exports";
 import useFunctions from "../hooks/useFunctions";
 
 const Context = ({ children }: { children: ReactNode }) => {
 	const { getStorageItem } = useFunctions();
 
-	const [studentList, setStudentList] = useState<StudentType[] | []>(
+	const [studentList, setStudentList] = useState<Entity[] | []>(
 		getStorageItem("studentList", [])
 	);
 	const role: "Lecturer" | "Student" = getStorageItem("role", null);

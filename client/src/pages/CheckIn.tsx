@@ -76,15 +76,16 @@ const CheckIn = () => {
 			});
 			setShowErrorMessage(true);
 			setTimeout(() => setShowErrorMessage(false), 3000);
+
 			return;
 		}
 
 		setLoading(true);
 
 		try {
-			const res = await Axios.post(
-				"http://localhost:4401/save-user",
-				// "https://record-attendance.onrender.com/save-user",
+			await Axios.post(
+				// "http://localhost:4401/check-in",
+				"https://record-attendance.onrender.com/check-in",
 				{ ...data, ...newFormInput }
 			);
 
