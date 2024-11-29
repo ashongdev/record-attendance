@@ -13,7 +13,8 @@ const StudentList = () => {
 		setLecturerLongitude,
 		lecturerLongitude,
 		lecturerLatitude,
-		lec,
+		lecAutofillDetails,
+		role,
 	} = useContextProvider();
 
 	const getStudentList = async (courseCode: string, groupid: string) => {
@@ -56,6 +57,7 @@ const StudentList = () => {
 			setLecturerLatitude(Number(lat.toFixed(2)));
 			setLecturerLongitude(Number(long.toFixed(2)));
 		} catch (error) {
+			console.log("🚀 ~ error:", error);
 			setEmpty("Could not get your location.");
 		}
 	};
@@ -63,23 +65,30 @@ const StudentList = () => {
 	const [empty, setEmpty] = useState("");
 
 	const fireEvent = () => {
-		getLecturersLocation(lec?.coursecode, lec?.groupid);
-		if (lec?.coursecode && lec?.groupid) {
-			getStudentList(lec?.coursecode, lec?.groupid);
+		getLecturersLocation(lecAutofillDetails?.coursecode, lecAutofillDetails?.groupid);
+		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
+			getStudentList(lecAutofillDetails?.coursecode, lecAutofillDetails?.groupid);
 		}
 	};
 	useEffect(() => {
 		fireEvent();
+
+		if (role === "Lecturer") {
+			localStorage.removeItem("checkedin?");
+			localStorage.removeItem("checkin-data");
+		}
 	}, []);
 
 	const currentDate = new Date().toLocaleString();
 
 	return (
 		<main>
-			{lec && (
+			{lecAutofillDetails && (
 				<div className="group-info">
-					<button className="course-code">{lec?.coursecode || "Code"}</button>
-					<button className="group-id">Group {lec?.groupid}</button>
+					<button className="course-code">
+						{lecAutofillDetails?.coursecode || "Code"}
+					</button>
+					<button className="group-id">Group {lecAutofillDetails?.groupid}</button>
 					<button
 						className="refresh-btn"
 						onClick={fireEvent}
@@ -111,7 +120,7 @@ const StudentList = () => {
 							studentList.map((student, index) => (
 								<tr
 									className="list"
-									key={student.indexnumber}
+									key={student.id}
 								>
 									<td>{index + 1}</td>
 									<td>{student.fullname}</td>
@@ -135,18 +144,16 @@ const StudentList = () => {
 			</div>
 
 			<p className="date">
-				Attendance for {lec?.coursecode} as of {currentDate}
+				Attendance for {lecAutofillDetails?.coursecode} as of {currentDate}
 			</p>
 
 			<div className="register">
-				{!lec && (
-					<Link
-						to="/lec/register"
-						className="btn"
-					>
-						Click here to register course
-					</Link>
-				)}
+				<Link
+					to="/lec/register"
+					className="register btn"
+				>
+					Register Group
+				</Link>
 			</div>
 		</main>
 	);

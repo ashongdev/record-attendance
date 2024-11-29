@@ -60,12 +60,13 @@ export const registerCourse = async (req: Request, res: Response) => {
 			]);
 
 			const sql: QueryResult<LecturerType> = await pool.query(
-				`SELECT * FROM LECTURERS WHERE COURSECODE = $1 `,
+				`SELECT LONG, LAT, COURSENAME, COURSECODE, FULLNAME, GROUPID FROM LECTURERS WHERE COURSECODE = $1 `,
 				[coursecode]
 			);
 
 			res.status(200).json(sql.rows[0]);
 		} catch (error) {
+			console.log("🚀 ~ registerCourse ~ error:", error);
 			res.status(403).json(error);
 		}
 	}

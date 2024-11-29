@@ -1,11 +1,20 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Entity } from "../exports/exports";
+import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 
 const StudentHome = () => {
 	const { getStorageItem } = useFunctions();
+	const { role } = useContextProvider();
 	const hasCheckedIn = getStorageItem("checkedin?", null);
 	const checkInData: Entity = getStorageItem("checkin-data", null);
+
+	useEffect(() => {
+		if (role === "Student") {
+			localStorage.removeItem("lec_autofill_details");
+		}
+	}, []);
 
 	return (
 		<main>

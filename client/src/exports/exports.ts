@@ -11,7 +11,9 @@ export interface Entity {
 	lat: number;
 }
 
-export interface Lecturertype extends Omit<Entity, "indexnumber"> {}
+export interface LecturerType extends Omit<Entity, "indexnumber"> {
+	coursename: string;
+}
 
 interface ContextType {
 	studentList: Entity[] | [];
@@ -21,11 +23,12 @@ interface ContextType {
 	lecturerLongitude: number;
 	setLecturerLongitude: Dispatch<SetStateAction<number>>;
 	role: "Lecturer" | "Student";
-	lec: Lecturertype;
+	lecAutofillDetails: LecturerType;
+	stdAutofillDetails: CheckInType;
 }
 
 export interface RegisterType extends Omit<Entity, "time" | "long" | "lat" | "indexnumber" | "id"> {
-	coursename: string | null;
+	coursename: string;
 }
 
 export interface CheckInType extends Omit<Entity, "time" | "long" | "lat" | "id"> {}

@@ -55,13 +55,18 @@ label {
 input,
 select {
 	background-color: #1a1a1a;
-	color: #999;
+	color: #e5e5e5;
 	width: 100%;
 	padding: 0.75rem;
 	margin-top: 0.5rem;
 	border: 0.0625rem solid #333;
 	border-radius: 0.25rem;
 	font-size: 1rem;
+}
+input:disabled,
+select:disabled {
+	background-color: #e5e5e5;
+	color: #333;
 }
 
 input:focus,
@@ -308,10 +313,6 @@ footer {
 		text-align: center;
 	}
 
-	nav .right p {
-		display: none;
-	}
-
 	.group {
 		flex-direction: column;
 		gap: 0.5rem;
@@ -411,6 +412,12 @@ footer {
 
 	footer p {
 		font-size: 0.7rem;
+	}
+}
+
+@media (max-width: 450px) {
+	nav .right p {
+		display: none;
 	}
 }
 
@@ -537,6 +544,9 @@ button.yes {
 @media print {
 	th:nth-child(4),
 	td:nth-child(4) {
+		display: none;
+	}
+	.register.btn {
 		display: none;
 	}
 }

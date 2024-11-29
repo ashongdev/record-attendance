@@ -5,8 +5,10 @@ import useContextProvider from "./hooks/useContextProvider";
 import { ProtectedRoute, PublicRoute } from "./hooks/useRouteFunctions";
 import CheckIn from "./pages/CheckIn";
 import Landing from "./pages/Landing";
+import LecturerDetailsForm from "./pages/LecturerDetailsForm";
 import NotFound from "./pages/NotFound";
 import RegisterCourse from "./pages/RegisterCourse";
+import StudentDetailsForm from "./pages/StudentDetailsForm";
 import StudentHome from "./pages/StudentHome";
 import StudentList from "./pages/StudentList";
 // !Download Oh MY ZSH for my terminal
@@ -68,6 +70,14 @@ const App = () => {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="/autofill/std/details"
+					element={
+						<ProtectedRoute role={role}>
+							{role === "Student" ? <StudentDetailsForm /> : <Navigate to="/" />}
+						</ProtectedRoute>
+					}
+				/>
 
 				{/* Lecturer Routes */}
 				<Route
@@ -106,6 +116,14 @@ const App = () => {
 									replace
 								/>
 							)}
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/autofill/lec/details"
+					element={
+						<ProtectedRoute role={role}>
+							{role === "Lecturer" ? <LecturerDetailsForm /> : <Navigate to="/" />}
 						</ProtectedRoute>
 					}
 				/>

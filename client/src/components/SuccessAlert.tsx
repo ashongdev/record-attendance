@@ -18,7 +18,10 @@ const SuccessAlert: FC<Props> = ({ successMessage, setShowSuccessMessage }) => {
 					</div>
 					<div className="alert-text">
 						{successMessage !== "Redirecting" ? (
-							<p className="alert-title">Success</p>
+							<>
+								<p className="alert-title">Success</p>
+								<p className="alert-description">{successMessage}</p>
+							</>
 						) : (
 							<p className="alert-title">{successMessage}</p>
 						)}

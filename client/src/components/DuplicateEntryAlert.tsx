@@ -8,7 +8,7 @@ interface Props {
 
 const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) => {
 	const getDetails = async () => {
-		localStorage.setItem("lec", JSON.stringify(data));
+		localStorage.setItem("lec_autofill_details", JSON.stringify(data));
 		setShowDuplicateEntryAlert(false);
 
 		setTimeout(() => {

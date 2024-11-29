@@ -6,6 +6,7 @@ import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
 import { CheckInType } from "../exports/exports";
 import { CheckInSchema } from "../exports/Schemas";
+import useContextProvider from "../hooks/useContextProvider";
 
 const CheckIn = () => {
 	/**
@@ -15,12 +16,20 @@ const CheckIn = () => {
 		- Restrict check-in to a specific time window (e.g., the first 5 minutes of class).
 		- Disable check-ins once the window closes, making it harder for absent students to exploit the system. 
 	*/
+
+	const { stdAutofillDetails } = useContextProvider();
+
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
 		resolver: yupResolver(CheckInSchema),
+		defaultValues: {
+			fullname: stdAutofillDetails?.fullname,
+			groupid: stdAutofillDetails?.groupid,
+			indexnumber: stdAutofillDetails?.indexnumber,
+		},
 	});
 
 	const [error, setError] = useState({ header: "", description: "" });
@@ -90,7 +99,7 @@ const CheckIn = () => {
 			);
 			if (res.data) {
 				setLoading(false);
-				setSuccessMessage("Your check-in has been successfully recorded.");
+				setSuccessMessage("You have successfully enrolled.");
 				setShowSuccessMessage(true);
 				setTimeout(() => setShowSuccessMessage(false), 2000);
 
@@ -148,7 +157,7 @@ const CheckIn = () => {
 			)}
 
 			<form
-				className="flex flex-col gap-4"
+				className="flex"
 				onSubmit={handleSubmit(formSubmit)}
 			>
 				<div className="group">
@@ -157,6 +166,8 @@ const CheckIn = () => {
 						type="name"
 						{...register("fullname")}
 						placeholder="e.g., Miles Morales"
+						title={stdAutofillDetails?.fullname && "Has been autofilled."}
+						disabled={stdAutofillDetails?.fullname ? true : false}
 					/>
 					<p className="error">{errors.fullname?.message}</p>
 				</div>
@@ -178,6 +189,8 @@ const CheckIn = () => {
 					<select
 						id="groupid"
 						{...register("groupid")}
+						title={stdAutofillDetails?.groupid && "Has been autofilled."}
+						disabled={stdAutofillDetails?.groupid ? true : false}
 					>
 						<option value="">--Select Group--</option>
 						{["A", "B", "C", "D", "E", "F", "G"].map((group) => (
@@ -200,6 +213,8 @@ const CheckIn = () => {
 						maxLength={10}
 						{...register("indexnumber")}
 						placeholder="e.g., 421123890"
+						title={stdAutofillDetails?.indexnumber && "Has been autofilled."}
+						disabled={stdAutofillDetails?.indexnumber ? true : false}
 					/>
 					<p className="error">{errors.indexnumber?.message}</p>
 				</div>
