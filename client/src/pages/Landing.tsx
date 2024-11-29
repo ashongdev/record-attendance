@@ -7,7 +7,22 @@ const Landing = () => {
 		if (role !== "Student" && role !== "Lecturer") return;
 
 		localStorage.setItem("role", JSON.stringify(role));
+
+		if (role === "Student") {
+			setTimeout(() => {
+				window.location.href = "/autofill/std/details";
+			}, 1500);
+		}
+		if (role === "Lecturer") {
+			setTimeout(() => {
+				window.location.href = "/autofill/lec/details";
+			}, 1500);
+		}
 	};
+
+	// const wakeServer = () => {
+	// 	Axios.get("")
+	// }
 
 	useEffect(() => {
 		localStorage.removeItem("lec_autofill_details");
