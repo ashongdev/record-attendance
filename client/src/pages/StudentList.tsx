@@ -52,11 +52,13 @@ const StudentList = () => {
 				// `http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
 			);
 
-			const { lat, long }: LocationType = res.data[0];
+			if (res.data) {
+				const { lat, long }: LocationType = res.data[0];
 
-			if (lat !== 0 && long !== 0) {
-				setLecturerLatitude(Number(lat.toFixed(2)));
-				setLecturerLongitude(Number(long.toFixed(2)));
+				if (lat !== 0 && long !== 0) {
+					setLecturerLatitude(Number(lat.toFixed(2)));
+					setLecturerLongitude(Number(long.toFixed(2)));
+				}
 			}
 		} catch (error) {
 			console.log("🚀 ~ error:", error);
