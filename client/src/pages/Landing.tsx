@@ -1,19 +1,22 @@
 import { useState } from "react";
 import SuccessAlert from "../components/SuccessAlert";
-import useContextProvider from "../hooks/useContextProvider";
 import "../styles/Landing.css";
 
 const Landing = () => {
-	function setRole(role: "Lecturer" | "Student") {
-		localStorage.setItem("role", JSON.stringify(role));
-	}
-
-	const { role } = useContextProvider();
-
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
 	const handleClick = (role: "Lecturer" | "Student") => {
-		setRole(role);
+		if (role !== "Student" && role !== "Lecturer") return;
+
+		if (role === "Student") {
+			localStorage.removeItem("lec");
+		} else {
+			localStorage.removeItem("checkin-data");
+			localStorage.removeItem("checkedin?");
+		}
+
+		localStorage.setItem("role", JSON.stringify(role));
+
 		setShowSuccessMessage(true);
 		setTimeout(() => {
 			window.location.reload();

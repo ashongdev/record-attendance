@@ -72,6 +72,8 @@ const StudentList = () => {
 		fireEvent();
 	}, []);
 
+	const currentDate = new Date().toLocaleString();
+
 	return (
 		<main>
 			{lec && (
@@ -83,6 +85,12 @@ const StudentList = () => {
 						onClick={fireEvent}
 					>
 						REFRESH
+					</button>
+					<button
+						className="refresh-btn"
+						onClick={() => window.print()}
+					>
+						Print
 					</button>
 				</div>
 			)}
@@ -125,6 +133,10 @@ const StudentList = () => {
 					</tbody>
 				</table>
 			</div>
+
+			<p className="date">
+				Attendance for {lec?.coursecode} as of {currentDate}
+			</p>
 
 			<div className="register">
 				{!lec && (

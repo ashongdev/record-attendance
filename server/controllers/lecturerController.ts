@@ -18,7 +18,7 @@ export const getStudentList = async (req: Request, res: Response) => {
 
 		res.status(200).json(sql.rows);
 	} catch (error) {
-		res.status(404);
+		res.status(404).json(error);
 		console.log("🚀 ~ app.get ~ error:", error);
 	}
 };

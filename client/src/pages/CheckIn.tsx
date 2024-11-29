@@ -83,16 +83,20 @@ const CheckIn = () => {
 		setLoading(true);
 
 		try {
-			await Axios.post(
+			const res = await Axios.post(
 				// "http://localhost:4401/check-in",
 				"https://record-attendance.onrender.com/check-in",
 				{ ...data, ...newFormInput }
 			);
+			if (res.data) {
+				setLoading(false);
+				setSuccessMessage("Your check-in has been successfully recorded.");
+				setShowSuccessMessage(true);
+				setTimeout(() => setShowSuccessMessage(false), 2000);
 
-			setLoading(false);
-			setSuccessMessage("Your check-in has been successfully recorded.");
-			setShowSuccessMessage(true);
-			setTimeout(() => setShowSuccessMessage(false), 2000);
+				localStorage.setItem("checkedin?", JSON.stringify(true));
+				localStorage.setItem("checkin-data", JSON.stringify({ ...data, ...newFormInput }));
+			}
 		} catch (err) {
 			setLoading(false);
 			setShowErrorMessage(true);

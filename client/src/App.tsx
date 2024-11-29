@@ -5,10 +5,16 @@ import useContextProvider from "./hooks/useContextProvider";
 import { ProtectedRoute, PublicRoute } from "./hooks/useRouteFunctions";
 import CheckIn from "./pages/CheckIn";
 import Landing from "./pages/Landing";
+import NotFound from "./pages/NotFound";
 import RegisterCourse from "./pages/RegisterCourse";
 import StudentHome from "./pages/StudentHome";
 import StudentList from "./pages/StudentList";
+// !Download Oh MY ZSH for my terminal
+// todo: Add loader styles to css
+// ! create more pages asking the groupid, name and index number to autofill forms
+// !restrict student from checking in if detaild from localstorage matches the new one
 
+// !rnfz
 const App = () => {
 	const { role } = useContextProvider();
 
@@ -106,7 +112,7 @@ const App = () => {
 
 				<Route
 					path="*"
-					element={<h1>This route is not found</h1>}
+					element={<NotFound />}
 				/>
 			</Routes>
 			<Footer />
