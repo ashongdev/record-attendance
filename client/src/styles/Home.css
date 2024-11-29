@@ -303,9 +303,9 @@ tr:nth-child(even) {
 footer {
 	width: 100%;
 	text-align: center;
-	padding: 1.5625rem 0;
+	padding: 1rem 0;
 	font-weight: 300;
-	font-size: 0.9375rem;
+	font-size: 0.7rem;
 }
 
 @media (max-width: 48rem) {

@@ -131,7 +131,7 @@ const RegisterCourse = () => {
 
 	return (
 		<main>
-			{error && showErrorMessage && (
+			{showErrorMessage && (
 				<ErrorAlert
 					error={error}
 					setShowErrorMessage={setShowErrorMessage}

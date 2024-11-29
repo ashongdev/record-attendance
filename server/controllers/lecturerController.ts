@@ -28,12 +28,6 @@ export const registerCourse = async (req: Request, res: Response) => {
 
 	const randomID = uuid();
 
-	await pool.query(`INSERT INTO KEYS VALUES ($1, $2, $3)`, [
-		randomID,
-		coursecode.toUpperCase(),
-		new Date(),
-	]);
-
 	const check: QueryResult<LecturerType> = await pool.query(
 		`SELECT * FROM LECTURERS WHERE FULLNAME = $1 AND COURSENAME = $2 AND GROUPID = $3 AND COURSECODE = $4`,
 		[

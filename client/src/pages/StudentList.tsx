@@ -52,13 +52,15 @@ const StudentList = () => {
 				// `http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
 			);
 
-			const { lat, long }: LocationType = res.data;
+			const { lat, long }: LocationType = res.data[0];
 
-			setLecturerLatitude(Number(lat.toFixed(2)));
-			setLecturerLongitude(Number(long.toFixed(2)));
+			if (lat !== 0 && long !== 0) {
+				setLecturerLatitude(Number(lat.toFixed(2)));
+				setLecturerLongitude(Number(long.toFixed(2)));
+			}
 		} catch (error) {
 			console.log("🚀 ~ error:", error);
-			setEmpty("Could not get your location.");
+			setEmpty("Could not retrieve your location.");
 		}
 	};
 
@@ -71,12 +73,18 @@ const StudentList = () => {
 		}
 	};
 	useEffect(() => {
-		fireEvent();
-
 		if (role === "Lecturer") {
 			localStorage.removeItem("checkedin?");
 			localStorage.removeItem("checkin-data");
 		}
+
+		if (!lecturerLongitude && !lecturerLatitude) {
+			setEmpty("Could not retrive your location");
+
+			return;
+		}
+
+		fireEvent();
 	}, []);
 
 	const currentDate = new Date().toLocaleString();
@@ -117,25 +125,27 @@ const StudentList = () => {
 					</thead>
 					<tbody>
 						{studentList.length > 0 ? (
-							studentList.map((student, index) => (
-								<tr
-									className="list"
-									key={student.id}
-								>
-									<td>{index + 1}</td>
-									<td>{student.fullname}</td>
-									<td>{student.indexnumber}</td>
-									<td>
-										{formatDistanceToNow(student.time, { addSuffix: true })}
-									</td>
-									<td>
-										{lecturerLatitude === Number(student.lat.toFixed(2)) &&
-										lecturerLongitude === Number(student.long.toFixed(2))
-											? "IN"
-											: "NOT IN"}
-									</td>
-								</tr>
-							))
+							studentList.map(
+								({ fullname, id, indexnumber, time, lat, long }, index) => (
+									<tr
+										className="list"
+										key={id}
+									>
+										<td>{index + 1}</td>
+										<td>{fullname}</td>
+										<td>{indexnumber}</td>
+										<td>{formatDistanceToNow(time, { addSuffix: true })}</td>
+										<td>
+											{lat !== 0 &&
+											long !== 0 &&
+											lecturerLatitude === Number(lat.toFixed(2)) &&
+											lecturerLongitude === Number(long.toFixed(2))
+												? "IN"
+												: "NOT IN"}
+										</td>
+									</tr>
+								)
+							)
 						) : (
 							<p className="empty">{empty}</p>
 						)}
