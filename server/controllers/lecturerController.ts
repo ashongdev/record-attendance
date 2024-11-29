@@ -18,7 +18,7 @@ export const getStudentList = async (req: Request, res: Response) => {
 
 		res.status(200).json(sql.rows);
 	} catch (error) {
-		res.status(404);
+		res.status(404).json(error);
 		console.log("🚀 ~ app.get ~ error:", error);
 	}
 };
@@ -27,12 +27,6 @@ export const registerCourse = async (req: Request, res: Response) => {
 	const { fullname, coursecode, coursename, lat, long, time, groupid } = req.body;
 
 	const randomID = uuid();
-
-	await pool.query(`INSERT INTO KEYS VALUES ($1, $2, $3)`, [
-		randomID,
-		coursecode.toUpperCase(),
-		new Date(),
-	]);
 
 	const check: QueryResult<LecturerType> = await pool.query(
 		`SELECT * FROM LECTURERS WHERE FULLNAME = $1 AND COURSENAME = $2 AND GROUPID = $3 AND COURSECODE = $4`,
@@ -60,12 +54,13 @@ export const registerCourse = async (req: Request, res: Response) => {
 			]);
 
 			const sql: QueryResult<LecturerType> = await pool.query(
-				`SELECT * FROM LECTURERS WHERE COURSECODE = $1 `,
+				`SELECT LONG, LAT, COURSENAME, COURSECODE, FULLNAME, GROUPID FROM LECTURERS WHERE COURSECODE = $1 `,
 				[coursecode]
 			);
 
 			res.status(200).json(sql.rows[0]);
 		} catch (error) {
+			console.log("🚀 ~ registerCourse ~ error:", error);
 			res.status(403).json(error);
 		}
 	}

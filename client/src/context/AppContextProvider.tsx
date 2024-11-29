@@ -9,7 +9,8 @@ const Context = ({ children }: { children: ReactNode }) => {
 		getStorageItem("studentList", [])
 	);
 	const role: "Lecturer" | "Student" = getStorageItem("role", null);
-	const lec = getStorageItem("lec", null);
+	const lecAutofillDetails = getStorageItem("lec_autofill_details", null);
+	const stdAutofillDetails = getStorageItem("std_autofill_details", null);
 
 	const [lecturerLongitude, setLecturerLongitude] = useState(0);
 	const [lecturerLatitude, setLecturerLatitude] = useState(0);
@@ -24,7 +25,8 @@ const Context = ({ children }: { children: ReactNode }) => {
 				lecturerLatitude,
 				setLecturerLatitude,
 				role,
-				lec,
+				lecAutofillDetails,
+				stdAutofillDetails,
 			}}
 		>
 			{children}

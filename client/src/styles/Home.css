@@ -55,13 +55,18 @@ label {
 input,
 select {
 	background-color: #1a1a1a;
-	color: #999;
+	color: #e5e5e5;
 	width: 100%;
 	padding: 0.75rem;
 	margin-top: 0.5rem;
 	border: 0.0625rem solid #333;
 	border-radius: 0.25rem;
 	font-size: 1rem;
+}
+input:disabled,
+select:disabled {
+	background-color: #e5e5e5;
+	color: #333;
 }
 
 input:focus,
@@ -173,6 +178,15 @@ button.home-link:hover {
 a {
 	text-decoration: none;
 	color: inherit;
+}
+a.not-found {
+	text-decoration: underline;
+}
+a.not-found:hover {
+	color: blue;
+}
+.url {
+	margin: 1rem 0;
 }
 
 /* Header */
@@ -289,18 +303,14 @@ tr:nth-child(even) {
 footer {
 	width: 100%;
 	text-align: center;
-	padding: 1.5625rem 0;
+	padding: 1rem 0;
 	font-weight: 300;
-	font-size: 0.9375rem;
+	font-size: 0.7rem;
 }
 
 @media (max-width: 48rem) {
 	nav h1 {
 		text-align: center;
-	}
-
-	nav .right p {
-		display: none;
 	}
 
 	.group {
@@ -405,6 +415,12 @@ footer {
 	}
 }
 
+@media (max-width: 450px) {
+	nav .right p {
+		display: none;
+	}
+}
+
 .error-alert-container {
 	display: flex;
 	flex-direction: column;
@@ -493,6 +509,7 @@ footer {
 }
 .details div {
 	font-size: 0.8rem;
+	text-transform: capitalize;
 }
 .details span {
 	font-weight: bold;
@@ -518,4 +535,18 @@ button.yes {
 	margin-right: 1rem;
 	padding-left: 2rem;
 	padding-right: 2rem;
+}
+
+.date {
+	margin-top: 3rem;
+}
+
+@media print {
+	th:nth-child(4),
+	td:nth-child(4) {
+		display: none;
+	}
+	.register.btn {
+		display: none;
+	}
 }

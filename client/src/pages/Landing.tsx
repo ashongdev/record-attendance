@@ -1,49 +1,43 @@
-import { useState } from "react";
-import SuccessAlert from "../components/SuccessAlert";
-import useContextProvider from "../hooks/useContextProvider";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import "../styles/Landing.css";
 
 const Landing = () => {
-	function setRole(role: "Lecturer" | "Student") {
-		localStorage.setItem("role", JSON.stringify(role));
-	}
-
-	const { role } = useContextProvider();
-
-	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
 	const handleClick = (role: "Lecturer" | "Student") => {
-		setRole(role);
-		setShowSuccessMessage(true);
-		setTimeout(() => {
-			window.location.reload();
-		}, 2000);
+		if (role !== "Student" && role !== "Lecturer") return;
+
+		localStorage.setItem("role", JSON.stringify(role));
 	};
+
+	useEffect(() => {
+		localStorage.removeItem("lec_autofill_details");
+		localStorage.removeItem("std_autofill_details");
+		localStorage.removeItem("checkin-data");
+		localStorage.removeItem("checkedin?");
+	}, []);
 
 	return (
 		<div className="landing-page">
-			{showSuccessMessage && (
-				<SuccessAlert
-					successMessage="Redirecting"
-					setShowSuccessMessage={setShowSuccessMessage}
-				/>
-			)}
-
 			<h1>Welcome to the Attendance Tracker</h1>
 			<span>Select your role to get started:</span>
 			<div className="roles">
-				<button
-					className="role-button lecturer"
-					onClick={() => handleClick("Lecturer")}
-				>
-					I am a Lecturer
-				</button>
-				<button
-					className="role-button student"
-					onClick={() => handleClick("Student")}
-				>
-					I am a Student
-				</button>
+				<Link to="/autofill/lec/details">
+					<button
+						className="role-button lecturer"
+						onClick={() => handleClick("Lecturer")}
+					>
+						I am a Lecturer
+					</button>
+				</Link>
+
+				<Link to="/autofill/std/details">
+					<button
+						className="role-button student"
+						onClick={() => handleClick("Student")}
+					>
+						I am a Student
+					</button>
+				</Link>
 			</div>
 		</div>
 	);

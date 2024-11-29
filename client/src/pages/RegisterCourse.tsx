@@ -10,8 +10,13 @@ import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
 
 const RegisterCourse = () => {
-	const { setLecturerLatitude, setLecturerLongitude, lecturerLongitude, lecturerLatitude } =
-		useContextProvider();
+	const {
+		setLecturerLatitude,
+		setLecturerLongitude,
+		lecturerLongitude,
+		lecturerLatitude,
+		lecAutofillDetails,
+	} = useContextProvider();
 
 	const {
 		register,
@@ -19,6 +24,11 @@ const RegisterCourse = () => {
 		formState: { errors },
 	} = useForm({
 		resolver: yupResolver(SignInSchema),
+		defaultValues: {
+			coursecode: lecAutofillDetails?.coursecode || "",
+			coursename: lecAutofillDetails?.coursename || "",
+			fullname: lecAutofillDetails?.fullname || "",
+		},
 	});
 
 	const [error, setError] = useState({ header: "", description: "" });
@@ -52,7 +62,7 @@ const RegisterCourse = () => {
 	// Handle form submission
 	const formSubmit = async (data: RegisterType) => {
 		setData(data);
-		if (!lecturerLongitude && lecturerLatitude!) {
+		if (!lecturerLongitude && !lecturerLatitude) {
 			setError({
 				header: "Network Error",
 				description:
@@ -80,13 +90,12 @@ const RegisterCourse = () => {
 			);
 
 			if (response.data) {
-				localStorage.setItem("lec", JSON.stringify(response.data));
+				localStorage.setItem("lec_autofill_details", JSON.stringify(data));
 				setLoading(false);
-				setSuccessMessage(
-					"Course registered successfully! You can now view the enrolled students on the home page."
-				);
+				setSuccessMessage("Course registered successfully!");
 				setShowSuccessMessage(true);
-				setTimeout(() => setShowSuccessMessage(false), 2000);
+				setTimeout(() => setShowSuccessMessage(false), 1500);
+				setTimeout(() => (window.location.href = "/lec/home"), 2500);
 			}
 		} catch (err) {
 			setLoading(false);
@@ -122,7 +131,7 @@ const RegisterCourse = () => {
 
 	return (
 		<main>
-			{error && showErrorMessage && (
+			{showErrorMessage && (
 				<ErrorAlert
 					error={error}
 					setShowErrorMessage={setShowErrorMessage}
@@ -144,7 +153,7 @@ const RegisterCourse = () => {
 			)}
 
 			<form
-				className="flex flex-col gap-4"
+				className="flex"
 				onSubmit={handleSubmit(formSubmit)}
 			>
 				<label htmlFor="coursename">Enter Course Title</label>
@@ -153,6 +162,8 @@ const RegisterCourse = () => {
 						type="text"
 						id="coursename"
 						{...register("coursename")}
+						disabled={lecAutofillDetails?.coursename ? true : false}
+						title={lecAutofillDetails?.coursename && "Has been autofilled."}
 						placeholder="e.g., African Studies"
 					/>
 					<p className="error">{errors.coursename?.message}</p>
@@ -166,6 +177,8 @@ const RegisterCourse = () => {
 						{...register("coursecode")}
 						maxLength={10}
 						placeholder="e.g., AFR-291"
+						title={lecAutofillDetails?.coursecode && "Has been autofilled."}
+						disabled={lecAutofillDetails?.coursecode ? true : false}
 					/>
 					<p className="error">{errors.coursecode?.message}</p>
 				</div>
@@ -196,6 +209,8 @@ const RegisterCourse = () => {
 						id="fullname"
 						{...register("fullname")}
 						placeholder="e.g., John Doe"
+						disabled={lecAutofillDetails?.fullname ? true : false}
+						title={lecAutofillDetails?.fullname && "Has been autofilled."}
 					/>
 					<p className="error">{errors.fullname?.message}</p>
 				</div>

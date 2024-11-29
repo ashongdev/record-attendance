@@ -43,15 +43,12 @@ export const checkIn = async (req: Request, res: Response) => {
 					]
 				);
 
-				res.status(200);
-				return;
+				res.status(200).json({ msg: "Student data recorded." });
 			}
 		} else {
 			res.status(403).json("Not registered");
-			return;
 		}
 	} catch (error) {
 		res.status(403).json(error);
-		return;
 	}
 };
