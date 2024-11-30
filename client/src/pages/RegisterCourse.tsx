@@ -8,6 +8,7 @@ import SuccessAlert from "../components/SuccessAlert";
 import { RegisterType } from "../exports/exports";
 import { SignInSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
+import useFunctions from "../hooks/useFunctions";
 
 const RegisterCourse = () => {
 	const {
@@ -17,18 +18,15 @@ const RegisterCourse = () => {
 		lecturerLatitude,
 		lecAutofillDetails,
 	} = useContextProvider();
+	const { getStorageItem } = useFunctions();
 
 	const {
 		register,
 		handleSubmit,
+		setValue,
 		formState: { errors },
 	} = useForm({
 		resolver: yupResolver(SignInSchema),
-		defaultValues: {
-			coursecode: lecAutofillDetails?.coursecode || "",
-			coursename: lecAutofillDetails?.coursename || "",
-			fullname: lecAutofillDetails?.fullname || "",
-		},
 	});
 
 	const [error, setError] = useState({ header: "", description: "" });
@@ -38,8 +36,17 @@ const RegisterCourse = () => {
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 	const [showDuplicateEntryAlert, setShowDuplicateEntryAlert] = useState(false);
 
+	const [data, setData] = useState<RegisterType | null>(
+		getStorageItem("lec_autofill_details", null)
+	);
 	// Get the geolocation of the lecturer
 	useEffect(() => {
+		if (data) {
+			setValue("coursename", data.coursename);
+			setValue("coursecode", data.coursecode);
+			setValue("fullname", data.fullname);
+		}
+
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
 				(position) => {
@@ -58,10 +65,8 @@ const RegisterCourse = () => {
 		}
 	}, []);
 
-	const [data, setData] = useState<RegisterType | null>(null);
 	// Handle form submission
 	const formSubmit = async (data: RegisterType) => {
-		setData(data);
 		if (!lecturerLongitude && !lecturerLatitude) {
 			setError({
 				header: "Network Error",
@@ -89,27 +94,31 @@ const RegisterCourse = () => {
 				newFormInput
 			);
 
-			if (response.data) {
-				localStorage.setItem("lec_autofill_details", JSON.stringify(data));
+			if (response.data && response.data.coursename) {
+				localStorage.setItem("lec_autofill_details", JSON.stringify(response.data));
+				setData(response.data);
+
 				setLoading(false);
 				setSuccessMessage("Course registered successfully!");
 				setShowSuccessMessage(true);
 				setTimeout(() => setShowSuccessMessage(false), 1500);
-				setTimeout(() => (window.location.href = "/lec/home"), 2500);
+				setTimeout(() => (window.location.href = "/lec/home"), 1500);
 			}
 		} catch (err) {
 			setLoading(false);
 			setShowErrorMessage(true);
 
 			if (err instanceof AxiosError && err.response) {
-				const { data } = err.response;
-				const reqError: string = data;
+				const { data: errorData } = err.response;
+				const reqError: string = errorData;
 
 				if (/double entry detected/i.test(reqError)) {
+					setData(data);
 					setError({
 						header: "Duplicate Entry.",
 						description: "An entry with the same details already exists.",
 					});
+
 					setShowDuplicateEntryAlert(true);
 				} else {
 					console.log(err);
@@ -219,7 +228,9 @@ const RegisterCourse = () => {
 					{!loading ? (
 						<button type="submit">Register Course</button>
 					) : (
-						<div className="loader" />
+						<div className="loader-cont">
+							<div className="loader" />
+						</div>
 					)}
 				</div>
 			</form>

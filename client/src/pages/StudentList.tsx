@@ -37,23 +37,20 @@ const StudentList = () => {
 		}
 	};
 
-	const getLecturersLocation = async (courseCode: string, groupid: string) => {
+	const getLecturersLocation = async () => {
 		try {
-			if (!courseCode && !groupid) {
+			if (!lecAutofillDetails.id) {
 				setEmpty("Register course to view enrolled students.");
 
 				return;
 			}
 
 			const res = await Axios.get(
-				`https://record-attendance.onrender.com/lec/${
-					courseCode + "-" + groupid.toUpperCase()
-				}`
-				// `http://localhost:4401/lec/${courseCode + "-" + groupid.toUpperCase()}`
+				`https://record-attendance.onrender.com/lec/location/${lecAutofillDetails.id}`
+				// `http://localhost:4401/lec/location/${lecAutofillDetails.id}`
 			);
-
 			if (res.data) {
-				const { lat, long }: LocationType = res.data[0];
+				const { lat, long }: LocationType = res.data;
 
 				if (lat !== 0 && long !== 0) {
 					setLecturerLatitude(Number(lat.toFixed(2)));
@@ -69,24 +66,28 @@ const StudentList = () => {
 	const [empty, setEmpty] = useState("");
 
 	const fireEvent = () => {
-		getLecturersLocation(lecAutofillDetails?.coursecode, lecAutofillDetails?.groupid);
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
 			getStudentList(lecAutofillDetails?.coursecode, lecAutofillDetails?.groupid);
 		}
 	};
 	useEffect(() => {
-		if (role === "Lecturer") {
-			localStorage.removeItem("checkedin?");
-			localStorage.removeItem("checkin-data");
-		}
+		getLecturersLocation();
 
-		if (!lecturerLongitude && !lecturerLatitude) {
+		if (
+			(lecturerLongitude !== 0 && lecturerLatitude !== 0) ||
+			(lecturerLongitude == null && lecturerLatitude == null)
+		) {
 			setEmpty("Could not retrive your location");
 
 			return;
 		}
 
-		fireEvent();
+		if (role === "Lecturer") {
+			localStorage.removeItem("checkedin?");
+			localStorage.removeItem("checkin-data");
+
+			fireEvent();
+		}
 	}, []);
 
 	const currentDate = new Date().toLocaleString();

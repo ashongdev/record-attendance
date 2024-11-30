@@ -1,5 +1,7 @@
+import Axios from "axios";
 import { Dispatch, FC, SetStateAction } from "react";
 import { RegisterType } from "../exports/exports";
+import useContextProvider from "../hooks/useContextProvider";
 
 interface Props {
 	data: RegisterType | null;
@@ -7,13 +9,24 @@ interface Props {
 }
 
 const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) => {
+	const { lecturerLatitude, lecturerLongitude } = useContextProvider();
 	const getDetails = async () => {
-		localStorage.setItem("lec_autofill_details", JSON.stringify(data));
-		setShowDuplicateEntryAlert(false);
+		try {
+			const response = await Axios.post(
+				// "http://localhost:4401/lec/get-details",
+				"https://record-attendance.onrender.com/lec/get-details",
+				{ data, lecturerLatitude, lecturerLongitude }
+			);
 
-		setTimeout(() => {
-			window.location.href = "/";
-		}, 1500);
+			if (response.data) {
+				localStorage.setItem("lec_autofill_details", JSON.stringify(response.data));
+				setShowDuplicateEntryAlert(false);
+
+				setTimeout(() => (window.location.href = "/lec/home"), 1500);
+			}
+		} catch (error) {
+			console.log("🚀 ~ getDetails ~ error:", error);
+		}
 	};
 
 	return (
@@ -23,16 +36,19 @@ const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) =>
 
 				<div className="details">
 					<div>
-						<span>Course Name: </span>Comm Skills
+						<span>Course Name: </span>
+						{data?.coursename}
 					</div>
 					<div>
-						<span>Course Code: </span> ENG-119
+						<span>Course Code: </span> {data?.coursecode}
 					</div>
 					<div>
-						<span>Group: </span>E
+						<span>Group: </span>
+						{data?.groupid}
 					</div>
 					<div>
-						<span>Full Name: </span>Edmond Okyere
+						<span>Full Name: </span>
+						{data?.fullname}
 					</div>
 				</div>
 
@@ -41,13 +57,13 @@ const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) =>
 						className="no"
 						onClick={() => setShowDuplicateEntryAlert(false)}
 					>
-						No, it's not
+						No
 					</button>
 					<button
 						className="yes"
 						onClick={getDetails}
 					>
-						Yes, it's me
+						Yes
 					</button>
 				</div>
 
