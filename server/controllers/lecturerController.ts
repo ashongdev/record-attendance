@@ -50,9 +50,7 @@ export const registerCourse = async (req: Request, res: Response) => {
 	);
 
 	if (check.rowCount === 1) {
-		setTimeout(() => {
-			res.status(403).json("Double Entry Detected.");
-		}, 3000);
+		res.status(403).json("Double Entry Detected.");
 	} else {
 		try {
 			await pool.query(`INSERT INTO LECTURERS VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [
