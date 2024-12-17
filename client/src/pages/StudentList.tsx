@@ -60,7 +60,7 @@ const StudentList = () => {
 	const getStudents = async (groupid: string, coursecode: string) => {
 		try {
 			const res = await Axios.post(
-				`https://record-attendance.onrender.com//lec/get-students`,
+				`https://record-attendance.onrender.com/lec/get-students`,
 				// `http://localhost:4402/lec/get-students`,
 				{ groupid, coursecode }
 			);
