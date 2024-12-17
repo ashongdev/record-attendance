@@ -10,7 +10,7 @@ const Nav = () => {
 		<header>
 			<nav>
 				<Link to="/">
-					<h1>Attendance</h1>
+					<h1>ClassTrack</h1>
 				</Link>
 
 				<div className="right">

@@ -63,6 +63,12 @@ select {
 	border-radius: 0.25rem;
 	font-size: 1rem;
 }
+input[type="checkbox"] {
+	background-color: transparent;
+	transform: scale(1.5); /* Increases the size by 1.5 times */
+	margin-right: 10px;
+	cursor: pointer;
+}
 input:disabled,
 select:disabled {
 	background-color: #e5e5e5;
@@ -74,6 +80,11 @@ select:focus {
 	border-color: #007bff;
 	outline: none;
 	box-shadow: 0 0 0.3125rem rgba(0, 123, 255, 0.5);
+}
+input[type="checkbox"]:focus {
+	background-color: transparent;
+	border: none;
+	box-shadow: none;
 }
 
 .close-button {

@@ -1,96 +1,107 @@
 import Axios from "axios";
-import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Entity, LocationType } from "../exports/exports";
+import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
+import useFunctions from "../hooks/useFunctions";
+import search from "../images/search-outline.svg";
 
 const StudentList = () => {
-	const {
-		studentList,
-		setStudentList,
-		setLecturerLatitude,
-		setLecturerLongitude,
-		lecturerLongitude,
-		lecturerLatitude,
-		lecAutofillDetails,
-		role,
-	} = useContextProvider();
+	const { studentList, setStudentList, lecAutofillDetails } = useContextProvider();
+	const { getStorageItem } = useFunctions();
 
-	const getStudentList = async (courseCode: string, groupid: string) => {
-		try {
-			const res = await Axios.get(
-				`https://record-attendance.onrender.com/lec/${
-					// `http://localhost:4401/lec/${
-					courseCode + "-" + groupid.toUpperCase()
-				}`
-			);
-			const data: Entity[] = res.data;
+	const currentDate = new Date().toLocaleString();
+	const [searchValue, setSearchValue] = useState("");
+	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
 
-			if (data.length >= 1) {
-				setStudentList(data);
-			} else {
-				setEmpty("No match found for search.");
-			}
-		} catch (error) {
-			console.log("error:", error);
-		}
-	};
+	const searchStudent = () => {
+		const trimmedSearchValue = searchValue.trim();
+		setSearchValue(trimmedSearchValue);
 
-	const getLecturersLocation = async () => {
-		try {
-			if (!lecAutofillDetails.id) {
-				setEmpty("Register course to view enrolled students.");
-
-				return;
-			}
-
-			const res = await Axios.get(
-				`https://record-attendance.onrender.com/lec/location/${lecAutofillDetails.id}`
-				// `http://localhost:4401/lec/location/${lecAutofillDetails.id}`
-			);
-			if (res.data) {
-				const { lat, long }: LocationType = res.data;
-
-				if (lat !== 0 && long !== 0) {
-					setLecturerLatitude(Number(lat.toFixed(2)));
-					setLecturerLongitude(Number(long.toFixed(2)));
-				}
-			}
-		} catch (error) {
-			console.log("🚀 ~ error:", error);
-			setEmpty("Could not retrieve your location.");
-		}
-	};
-
-	const [empty, setEmpty] = useState("");
-
-	const fireEvent = () => {
-		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
-			getStudentList(lecAutofillDetails?.coursecode, lecAutofillDetails?.groupid);
-		}
-	};
-	useEffect(() => {
-		getLecturersLocation();
-
-		if (
-			(lecturerLongitude !== 0 && lecturerLatitude !== 0) ||
-			(lecturerLongitude == null && lecturerLatitude == null)
-		) {
-			setEmpty("Could not retrive your location");
-
+		if (!trimmedSearchValue) {
+			setFilteredStudentList([]);
 			return;
 		}
 
-		if (role === "Lecturer") {
-			localStorage.removeItem("checkedin?");
-			localStorage.removeItem("checkin-data");
+		const exactMatches = studentList.filter(({ indexnumber }) =>
+			indexnumber.includes(trimmedSearchValue)
+		);
 
-			fireEvent();
+		if (exactMatches.length > 0) {
+			setFilteredStudentList(exactMatches);
+			return;
+		}
+
+		// ! Check indexnumber before adding user
+		// Find the closest match by comparing the start of the index numbers
+		const closestMatch = studentList.reduce<Entity | null>((closest, current) => {
+			// Compare if one indexnumber starts with the searchValue
+			if (current.indexnumber.startsWith(trimmedSearchValue)) {
+				return current; // Take the first valid match
+			}
+
+			return closest;
+		}, null);
+
+		if (closestMatch) {
+			setFilteredStudentList([closestMatch]);
+			return;
+		}
+
+		// No matches at all
+		setFilteredStudentList([]);
+		console.log("No matches found.");
+	};
+
+	useEffect(() => {
+		searchStudent();
+	}, [searchValue]);
+
+	const getStudents = async (groupid: string, coursecode: string) => {
+		try {
+			const res = await Axios.post(
+				`https://record-attendance.onrender.com//lec/get-students`,
+				// `http://localhost:4402/lec/get-students`,
+				{ groupid, coursecode }
+			);
+
+			const data: Entity[] = res.data;
+			if (data) {
+				setStudentList(res.data);
+			}
+		} catch (error) {
+			console.log("🚀 ~ getStudents ~ error:", error);
+		}
+	};
+
+	const updateLastChecked = async (
+		date: Date,
+		coursecode: string,
+		groupid: string,
+		studentId?: string
+	) => {
+		try {
+			const res = await Axios.post(
+				`https://record-attendance.onrender.com/lec/last-checked`,
+				// `http://localhost:4402/lec/last-checked`,
+				{ date, coursecode, groupid, studentId }
+			);
+
+			const data: Entity[] = res.data;
+
+			localStorage.setItem("date", JSON.stringify(date.getDate()));
+		} catch (error) {
+			console.log("🚀 ~ getStudents ~ error:", error);
+		}
+	};
+
+	const date = getStorageItem("date", null);
+
+	useEffect(() => {
+		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
+			getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode);
 		}
 	}, []);
-
-	const currentDate = new Date().toLocaleString();
 
 	return (
 		<main>
@@ -102,7 +113,9 @@ const StudentList = () => {
 					<button className="group-id">Group {lecAutofillDetails?.groupid}</button>
 					<button
 						className="refresh-btn"
-						onClick={fireEvent}
+						onClick={() =>
+							getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode)
+						}
 					>
 						REFRESH
 					</button>
@@ -115,6 +128,26 @@ const StudentList = () => {
 				</div>
 			)}
 
+			<div>
+				<input
+					type="text"
+					placeholder="Search index number"
+					value={searchValue}
+					maxLength={10}
+					onChange={(e) => {
+						setSearchValue(e.target.value);
+					}}
+				/>
+
+				<div>
+					<img
+						src={search}
+						alt=""
+						className="icon"
+					/>
+				</div>
+			</div>
+
 			<div className="display-list">
 				<table>
 					<thead>
@@ -122,14 +155,12 @@ const StudentList = () => {
 							<th>No.</th>
 							<th>FullName</th>
 							<th>Index No.</th>
-							<th className="time">Time</th>
-							<th className="present">Present</th>
+							<th className="present">Status</th>
 						</tr>
 					</thead>
 					<tbody>
-						{studentList.length > 0 ? (
-							studentList.map(
-								({ fullname, id, indexnumber, time, lat, long }, index) => (
+						{filteredStudentList.length > 0
+							? filteredStudentList.map(({ fullname, id, indexnumber }, index) => (
 									<tr
 										className="list"
 										key={id}
@@ -137,21 +168,49 @@ const StudentList = () => {
 										<td>{index + 1}</td>
 										<td>{fullname}</td>
 										<td>{indexnumber}</td>
-										<td>{formatDistanceToNow(time, { addSuffix: true })}</td>
 										<td>
-											{lat !== 0 &&
-											long !== 0 &&
-											lecturerLatitude === Number(lat.toFixed(2)) &&
-											lecturerLongitude === Number(long.toFixed(2))
-												? "IN"
-												: "NOT IN"}
+											<input type="checkbox" />
 										</td>
 									</tr>
-								)
-							)
-						) : (
-							<p className="empty">{empty}</p>
-						)}
+							  ))
+							: filteredStudentList.length === 0 &&
+							  studentList.length > 0 &&
+							  studentList.map(
+									(
+										{ fullname, id, indexnumber, last_checked, checked },
+										index
+									) => (
+										<tr
+											className="list"
+											key={id}
+										>
+											<td>{index + 1}</td>
+											<td>{fullname}</td>
+											<td>{indexnumber}</td>
+											<td>
+												<input
+													type="checkbox"
+													onClick={() => {
+														updateLastChecked(
+															new Date(),
+															lecAutofillDetails.coursecode,
+															lecAutofillDetails.groupid,
+															indexnumber
+														);
+													}}
+													defaultChecked={
+														new Date(last_checked).toDateString() ===
+														new Date().toDateString()
+															? checked === "true"
+																? true
+																: false
+															: false
+													}
+												/>
+											</td>
+										</tr>
+									)
+							  )}
 					</tbody>
 				</table>
 			</div>

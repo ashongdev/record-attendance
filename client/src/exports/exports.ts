@@ -6,9 +6,10 @@ export interface Entity {
 	indexnumber: string;
 	groupid: string;
 	coursecode: string;
-	time: Date;
+	last_checked: Date;
 	long: number;
 	lat: number;
+	checked: string;
 }
 
 export interface LecturerType extends Omit<Entity, "indexnumber"> {
@@ -23,17 +24,19 @@ interface ContextType {
 	lecturerLongitude: number;
 	setLecturerLongitude: Dispatch<SetStateAction<number>>;
 	role: "Lecturer" | "Student";
-	lecAutofillDetails: LecturerType;
+	lecAutofillDetails: Omit<LecturerType, "checked">;
 	stdAutofillDetails: CheckInType;
 }
 
-export interface RegisterType extends Omit<Entity, "time" | "long" | "lat" | "indexnumber" | "id"> {
+export interface RegisterType
+	extends Omit<Entity, "last_checked" | "long" | "lat" | "indexnumber" | "id"> {
 	coursename: string;
 }
 
-export interface CheckInType extends Omit<Entity, "time" | "long" | "lat" | "id"> {}
+export interface CheckInType
+	extends Omit<Entity, "last_checked" | "long" | "lat" | "id" | "checked"> {}
 
 export interface LocationType
-	extends Omit<Entity, "time" | "indexnumber" | "groupid" | "fullname" | "coursecode"> {}
+	extends Omit<Entity, "last_checked" | "indexnumber" | "groupid" | "fullname" | "coursecode"> {}
 
 export const ContextProvider = createContext<ContextType | undefined>(undefined);

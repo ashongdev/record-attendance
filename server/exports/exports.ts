@@ -6,9 +6,10 @@ export interface Entity {
 	indexnumber: string;
 	groupid: string;
 	coursecode: string;
-	time: Date;
+	last_checked: Date;
 	long: number;
 	lat: number;
+	checked: string;
 }
 
 export interface LecturerType extends Omit<Entity, "indexnumber"> {

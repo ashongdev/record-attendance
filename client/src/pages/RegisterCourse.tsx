@@ -89,7 +89,7 @@ const RegisterCourse = () => {
 
 		const newFormInput = {
 			...data,
-			time: new Date(),
+			last_checked: new Date(),
 			long: lecturerLongitude,
 			lat: lecturerLatitude,
 		};

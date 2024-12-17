@@ -1,6 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import Axios, { AxiosError } from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
@@ -38,64 +38,15 @@ const CheckIn = () => {
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 	const [loading, setLoading] = useState(false);
 
-	const [newFormInput, setNewFormInput] = useState({
-		time: new Date(),
-		long: 0,
-		lat: 0,
-	});
-
-	// Geolocation handler
-	useEffect(() => {
-		const options = {
-			enableHighAccuracy: true,
-			timeout: 5000,
-			maximumAge: 0,
-		};
-
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				const crd = pos.coords;
-				setNewFormInput((prev) => ({
-					...prev,
-					long: crd.longitude,
-					lat: crd.latitude,
-				}));
-			},
-			(err) => {
-				setError({
-					header: "Network Error",
-					description:
-						"Check your internet connection and allow access to your location to continue.",
-				});
-				setShowErrorMessage(true);
-				setTimeout(() => setShowErrorMessage(false), 3000);
-				console.warn(`ERROR(${err.code}): ${err.message}`);
-			},
-			options
-		);
-	}, []);
-
 	// Form submission handler
 	const formSubmit = async (data: CheckInType) => {
-		if (!newFormInput.lat || !newFormInput.long) {
-			setError({
-				header: "Network Error",
-				description:
-					"Check your internet connection and allow access to your location to continue.",
-			});
-			setShowErrorMessage(true);
-			setTimeout(() => setShowErrorMessage(false), 3000);
-
-			return;
-		}
-
 		setLoading(true);
 
 		try {
 			const res = await Axios.post(
-				// "http://localhost:4401/check-in",
+				// "http://localhost:4402/check-in",
 				"https://record-attendance.onrender.com/check-in",
-				{ ...data, ...newFormInput }
+				{ ...data, last_checked: new Date() }
 			);
 			if (res.data) {
 				setLoading(false);
@@ -104,7 +55,7 @@ const CheckIn = () => {
 				setTimeout(() => setShowSuccessMessage(false), 2000);
 
 				localStorage.setItem("checkedin?", JSON.stringify(true));
-				localStorage.setItem("checkin-data", JSON.stringify({ ...data, ...newFormInput }));
+				localStorage.setItem("checkin-data", JSON.stringify({ ...data, time: new Date() }));
 			}
 		} catch (err) {
 			setLoading(false);

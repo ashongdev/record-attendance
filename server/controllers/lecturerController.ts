@@ -2,40 +2,10 @@ import { Request, Response } from "express";
 import { QueryResult } from "pg";
 import { v4 as uuid } from "uuid";
 import { pool } from "../db";
-import { Entity, LecturerType } from "../exports/exports";
-
-export const getStudentList = async (req: Request, res: Response): Promise<any> => {
-	const { courseCode } = req.params;
-
-	try {
-		const splitCode = courseCode.split("-");
-		if (splitCode.length < 3) {
-			return res.status(400).json({ error: "Invalid course code format." });
-		}
-
-		const newCourseCode = `${splitCode[0].toUpperCase()}-${splitCode[1].toUpperCase()}`;
-		const groupid = splitCode[splitCode.length - 1].toUpperCase();
-
-		const sql: QueryResult<Entity> = await pool.query(
-			`SELECT * FROM STUDENTLIST WHERE COURSECODE = $1 AND GROUPID = $2`,
-			[newCourseCode, groupid]
-		);
-
-		if (sql.rowCount === 0) {
-			return res
-				.status(404)
-				.json({ message: "No students found for the given course code and group ID." });
-		}
-
-		res.status(200).json(sql.rows);
-	} catch (error) {
-		console.error("🚀 ~ getStudentList ~ error:", error);
-		res.status(500).json({ error: "An unexpected error occurred." });
-	}
-};
+import { LecturerType } from "../exports/exports";
 
 export const registerCourse = async (req: Request, res: Response) => {
-	const { fullname, coursecode, coursename, lat, long, time, groupid } = req.body;
+	const { fullname, coursecode, coursename, last_checked, groupid } = req.body;
 
 	const randomID = uuid();
 
@@ -53,14 +23,12 @@ export const registerCourse = async (req: Request, res: Response) => {
 		res.status(403).json("Double Entry Detected.");
 	} else {
 		try {
-			await pool.query(`INSERT INTO LECTURERS VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [
+			await pool.query(`INSERT INTO LECTURERS VALUES ($1, $2, $3, $4, $5, $6)`, [
 				randomID,
 				coursecode.toUpperCase(),
 				fullname.toUpperCase(),
 				groupid.toUpperCase(),
-				lat,
-				long,
-				time,
+				last_checked,
 				coursename.toUpperCase(),
 			]);
 
@@ -88,7 +56,7 @@ export const getDetails = async (req: Request, res: Response): Promise<any> => {
 
 	try {
 		const sql = await pool.query(
-			`SELECT ID, COURSECODE, COURSENAME, FULLNAME, GROUPID, LAT, LONG 
+			`SELECT ID, COURSECODE, COURSENAME, FULLNAME, GROUPID
 				FROM LECTURERS 
 				WHERE UPPER(COURSECODE) = UPPER($1) 
 				  AND UPPER(COURSENAME) = UPPER($2) 
@@ -103,46 +71,50 @@ export const getDetails = async (req: Request, res: Response): Promise<any> => {
 
 		const lecturer = sql.rows[0];
 
-		if (lecturer.lat === lecturerLatitude && lecturer.long === lecturerLongitude) {
-			return res.status(200).json(lecturer);
-		}
-
-		// Update lecturer's location if different
-		await pool.query(
-			`UPDATE LECTURERS 
-				SET LAT = $1, LONG = $2 
-				WHERE UPPER(COURSECODE) = UPPER($3) 
-				  AND UPPER(COURSENAME) = UPPER($4) 
-				  AND UPPER(FULLNAME) = UPPER($5) 
-				  AND UPPER(GROUPID) = UPPER($6)`,
-			[lecturerLatitude, lecturerLongitude, coursecode, coursename, fullname, groupid]
-		);
-
-		// Return the updated record
-		const updatedRecord = await pool.query(
-			`SELECT ID, COURSECODE, COURSENAME, FULLNAME, GROUPID, LAT, LONG 
-				FROM LECTURERS 
-				WHERE UPPER(COURSECODE) = UPPER($1) 
-				  AND UPPER(COURSENAME) = UPPER($2) 
-				  AND UPPER(FULLNAME) = UPPER($3) 
-				  AND UPPER(GROUPID) = UPPER($4)`,
-			[coursecode, coursename, fullname, groupid]
-		);
-
-		res.status(200).json(updatedRecord.rows[0]);
+		// if (lecturer.lat === lecturerLatitude && lecturer.long === lecturerLongitude) {
+		return res.status(200).json(lecturer);
 	} catch (error) {
 		console.error("🚀 ~ Error in getDetails:", error);
 		res.status(500).json({ error: "An unexpected error occurred." });
 	}
 };
 
-export const getLecturersLocation = async (req: Request, res: Response): Promise<void> => {
-	const { id } = req.params;
+export const updateLastChecked = async (req: Request, res: Response): Promise<void> => {
+	const { groupid, coursecode, date, studentId } = req.body;
 
 	try {
-		const sql = await pool.query(`SELECT LONG, LAT FROM LECTURERS WHERE ID = $1`, [id]);
+		const sql = await pool.query(
+			`UPDATE LECTURERS SET LAST_CHECKED = $1 WHERE GROUPID = $2 AND COURSECODE = $3`,
+			[date, groupid, coursecode]
+		);
+		const resp = await pool.query(`SELECT CHECKED FROM STUDENTS WHERE INDEXNUMBER = $1`, [
+			studentId,
+		]);
 
-		res.status(200).json(sql.rows[0]);
+		await pool.query(
+			`UPDATE STUDENTS SET LAST_CHECKED = $1, CHECKED = ${
+				resp.rows[0].checked === "false" ? "true" : "false"
+			} WHERE INDEXNUMBER = $2`,
+			[date, studentId]
+		);
+
+		res.status(200).json(sql.rows);
+	} catch (error) {
+		console.log("🚀 ~ getLecturerLocation ~ error:", error);
+		res.status(404).json(error);
+	}
+};
+
+export const getStudents = async (req: Request, res: Response): Promise<void> => {
+	const { groupid, coursecode } = req.body;
+
+	try {
+		const sql = await pool.query(
+			`SELECT * FROM STUDENTS WHERE GROUPID = $1 AND COURSECODE = $2 ORDER BY FULLNAME`,
+			[groupid, coursecode]
+		);
+
+		res.status(200).json(sql.rows);
 	} catch (error) {
 		console.log("🚀 ~ getLecturerLocation ~ error:", error);
 		res.status(404).json(error);
