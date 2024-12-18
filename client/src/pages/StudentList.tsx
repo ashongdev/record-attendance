@@ -1,17 +1,19 @@
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import * as XLSX from "xlsx";
 import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
 
 const StudentList = () => {
-	const { studentList, setStudentList, lecAutofillDetails } = useContextProvider();
+	const { studentList, setStudentList, lecAutofillDetails, authenticate } = useContextProvider();
 	const { getStorageItem } = useFunctions();
 
 	const currentDate = new Date().toLocaleString();
 	const [searchValue, setSearchValue] = useState("");
+	const searchRef = useRef<HTMLInputElement>(null);
 	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
 
 	const searchStudent = () => {
@@ -28,30 +30,27 @@ const StudentList = () => {
 		);
 
 		if (exactMatches.length > 0) {
+			console.log("Match", exactMatches);
 			setFilteredStudentList(exactMatches);
 			return;
 		}
 
-		// ! Check indexnumber before adding user
-		// Find the closest match by comparing the start of the index numbers
-		const closestMatch = studentList.reduce<Entity | null>((closest, current) => {
-			// Compare if one indexnumber starts with the searchValue
-			if (current.indexnumber.startsWith(trimmedSearchValue)) {
-				return current; // Take the first valid match
-			}
+		if (exactMatches.length < 1) {
+			console.log("No match", exactMatches.length);
+			setFilteredStudentList([]);
 
-			return closest;
-		}, null);
-
-		if (closestMatch) {
-			setFilteredStudentList([closestMatch]);
 			return;
 		}
-
-		// No matches at all
-		setFilteredStudentList([]);
-		console.log("No matches found.");
 	};
+
+	const { key, coursename }: { status: boolean; key: string; coursename: string } =
+		getStorageItem("auth", null);
+
+	useEffect(() => {
+		if (!key && !coursename) return;
+
+		authenticate(key, coursename);
+	}, []);
 
 	useEffect(() => {
 		searchStudent();
@@ -89,13 +88,54 @@ const StudentList = () => {
 
 			const data: Entity[] = res.data;
 
+			if (data) {
+				setStudentList(data);
+			}
+
 			localStorage.setItem("date", JSON.stringify(date.getDate()));
 		} catch (error) {
 			console.log("🚀 ~ getStudents ~ error:", error);
 		}
 	};
+	const [isInputFocused, setIsInputFocused] = useState(false);
 
-	const date = getStorageItem("date", null);
+	const generateExcelFile = (studentList: Entity[]) => {
+		try {
+			const data = [
+				[
+					`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
+						lecAutofillDetails?.groupid
+					} as at ${new Date().toDateString()} ${currentDate}`,
+				],
+				[""],
+				["No.", "Index Number", "Full Name", "Status"],
+			];
+
+			studentList.forEach((student: Entity, index) => {
+				data.push([
+					(index + 1).toString(),
+					student.indexnumber,
+					student.fullname,
+					student.checked === "true" ? "Present" : "Absent",
+				]);
+			});
+
+			data.push([""]);
+			data.push([`Total Number of Students: ${studentList.length.toString()}`]);
+
+			// Create a worksheet
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+			// Create a workbook and append the worksheet
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+			// Export the workbook as a file
+			XLSX.writeFile(workbook, "Attendance.xlsx");
+		} catch (error) {
+			console.log("Error generating excel file");
+		}
+	};
 
 	useEffect(() => {
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
@@ -103,50 +143,95 @@ const StudentList = () => {
 		}
 	}, []);
 
+	const [showSearchBar, setShowSearchBar] = useState(false);
+
 	return (
 		<main>
 			{lecAutofillDetails && (
-				<div className="group-info">
-					<button className="course-code">
-						{lecAutofillDetails?.coursecode || "Code"}
-					</button>
-					<button className="group-id">Group {lecAutofillDetails?.groupid}</button>
-					<button
-						className="refresh-btn"
-						onClick={() =>
-							getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode)
-						}
-					>
-						REFRESH
-					</button>
-					<button
-						className="refresh-btn"
-						onClick={() => window.print()}
-					>
-						Print
-					</button>
-				</div>
+				<>
+					<div className={`group-info ${isInputFocused ? "hidden" : ""}`}>
+						<button className="course-code">
+							{lecAutofillDetails?.coursecode || "Code"}
+						</button>
+
+						<button className="group-id">Group {lecAutofillDetails?.groupid}</button>
+
+						{lecAutofillDetails.groupid && lecAutofillDetails.coursecode && (
+							<button
+								className="refresh-btn"
+								onClick={() =>
+									getStudents(
+										lecAutofillDetails.groupid,
+										lecAutofillDetails.coursecode
+									)
+								}
+							>
+								REFRESH
+							</button>
+						)}
+
+						<button
+							className="refresh-btn"
+							onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
+						>
+							Generate Report
+						</button>
+
+						<button
+							className="refresh-btn"
+							onMouseDown={(e) => e.preventDefault()}
+							onClick={() => {
+								setShowSearchBar(true);
+								setTimeout(() => {
+									searchRef.current && searchRef.current.focus();
+								}, 10);
+							}}
+						>
+							<img
+								src={search}
+								alt=""
+								className="icon"
+							/>
+						</button>
+					</div>
+
+					{showSearchBar && (
+						<div className={`search-bar ${isInputFocused ? "focused" : ""}`}>
+							<input
+								type="text"
+								placeholder="Search by index number"
+								value={searchValue}
+								maxLength={10}
+								ref={searchRef}
+								onFocus={() => setIsInputFocused(true)}
+								onBlur={(e) => {
+									if (
+										!e.relatedTarget ||
+										(e.relatedTarget !== searchRef.current &&
+											e.relatedTarget.nodeName !== "BUTTON")
+									) {
+										setIsInputFocused(false);
+										setShowSearchBar(false);
+									}
+								}}
+								onChange={(e) => {
+									setSearchValue(e.target.value);
+								}}
+							/>
+							<button
+								onMouseDown={(e) => e.preventDefault()}
+								onClick={() => searchRef.current && searchRef.current.focus()}
+							>
+								<img
+									src={search}
+									alt=""
+									className="icon"
+								/>
+							</button>
+						</div>
+					)}
+				</>
 			)}
-
-			<div>
-				<input
-					type="text"
-					placeholder="Search index number"
-					value={searchValue}
-					maxLength={10}
-					onChange={(e) => {
-						setSearchValue(e.target.value);
-					}}
-				/>
-
-				<div>
-					<img
-						src={search}
-						alt=""
-						className="icon"
-					/>
-				</div>
-			</div>
 
 			<div className="display-list">
 				<table>
@@ -159,21 +244,45 @@ const StudentList = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{filteredStudentList.length > 0
-							? filteredStudentList.map(({ fullname, id, indexnumber }, index) => (
-									<tr
-										className="list"
-										key={id}
-									>
-										<td>{index + 1}</td>
-										<td>{fullname}</td>
-										<td>{indexnumber}</td>
-										<td>
-											<input type="checkbox" />
-										</td>
-									</tr>
-							  ))
+						{filteredStudentList.length >= 0 && searchValue.length > 0
+							? filteredStudentList.map(
+									(
+										{ fullname, id, indexnumber, last_checked, checked },
+										index
+									) => (
+										<tr
+											className="list"
+											key={id}
+										>
+											<td>{index + 1}</td>
+											<td>{fullname}</td>
+											<td>{indexnumber}</td>
+											<td>
+												<input
+													type="checkbox"
+													onClick={() => {
+														updateLastChecked(
+															new Date(),
+															lecAutofillDetails.coursecode,
+															lecAutofillDetails.groupid,
+															indexnumber
+														);
+													}}
+													defaultChecked={
+														new Date(last_checked).toDateString() ===
+														new Date().toDateString()
+															? checked === "true"
+																? true
+																: false
+															: false
+													}
+												/>
+											</td>
+										</tr>
+									)
+							  )
 							: filteredStudentList.length === 0 &&
+							  searchValue.length === 0 &&
 							  studentList.length > 0 &&
 							  studentList.map(
 									(
@@ -216,7 +325,7 @@ const StudentList = () => {
 			</div>
 
 			<p className="date">
-				Attendance for {lecAutofillDetails?.coursecode} as of {currentDate}
+				Attendance for {lecAutofillDetails?.coursecode} as at {currentDate}
 			</p>
 
 			<div className="register">

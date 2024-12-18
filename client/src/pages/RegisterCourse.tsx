@@ -11,13 +11,7 @@ import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 
 const RegisterCourse = () => {
-	const {
-		setLecturerLatitude,
-		setLecturerLongitude,
-		lecturerLongitude,
-		lecturerLatitude,
-		lecAutofillDetails,
-	} = useContextProvider();
+	const { lecAutofillDetails, authenticate } = useContextProvider();
 	const { getStorageItem } = useFunctions();
 
 	const {
@@ -39,7 +33,10 @@ const RegisterCourse = () => {
 	const [data, setData] = useState<RegisterType | null>(
 		getStorageItem("lec_autofill_details", null)
 	);
-	// Get the geolocation of the lecturer
+
+	const { key, coursename }: { status: boolean; key: string; coursename: string } =
+		getStorageItem("auth", null);
+
 	useEffect(() => {
 		if (data) {
 			setValue("coursename", data.coursename);
@@ -47,58 +44,23 @@ const RegisterCourse = () => {
 			setValue("fullname", data.fullname);
 		}
 
-		const options = {
-			enableHighAccuracy: true,
-			timeout: 5000,
-			maximumAge: 0,
-		};
+		if (!key && !coursename) return;
 
-		navigator.geolocation.getCurrentPosition(
-			(pos) => {
-				const crd = pos.coords;
-				setLecturerLongitude(Number(crd.longitude));
-				setLecturerLatitude(Number(crd.latitude));
-			},
-			(err) => {
-				setError({
-					header: "Network Error",
-					description:
-						"Check your internet connection and allow access to your location to continue.",
-				});
-				setShowErrorMessage(true);
-				setTimeout(() => setShowErrorMessage(false), 3000);
-				console.warn(`ERROR(${err.code}): ${err.message}`);
-			},
-			options
-		);
+		authenticate(key, coursename);
 	}, []);
 
 	// Handle form submission
 	const formSubmit = async (data: RegisterType) => {
-		if (!lecturerLongitude && !lecturerLatitude) {
-			setError({
-				header: "Network Error",
-				description:
-					"Check your internet connection and allow access to your location to continue.",
-			});
-			setShowErrorMessage(true);
-			setTimeout(() => setShowErrorMessage(false), 3000);
-
-			return;
-		}
-
 		const newFormInput = {
 			...data,
 			last_checked: new Date(),
-			long: lecturerLongitude,
-			lat: lecturerLatitude,
 		};
 
 		setLoading(true);
 		try {
 			const response = await Axios.post(
-				// "http://localhost:4401/register-course",
-				"https://record-attendance.onrender.com/register-course",
+				"http://localhost:4402/register-course",
+				// "https://record-attendance.onrender.com/register-course",
 				newFormInput
 			);
 

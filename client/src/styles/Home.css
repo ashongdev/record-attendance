@@ -289,15 +289,22 @@ tr:nth-child(even) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 50%;
-	min-width: 50%;
 	gap: 1rem;
 	margin-bottom: 2rem;
+	opacity: 1;
+	width: 80%;
+	transition: opacity 0.2s ease;
+	transform: translateY(0);
+}
+.hidden {
+	display: none;
+	transform: translateY(-10px);
+	pointer-events: none;
 }
 
 .course-code,
 .group-id,
-.refresh-btn {
+.group-info button {
 	font-size: 1.1rem;
 	text-transform: uppercase;
 	font-size: 0.8rem;
@@ -306,7 +313,7 @@ tr:nth-child(even) {
 	background-color: #121212;
 }
 
-.refresh-btn:active {
+.group-info button:active {
 	background-color: #003d80;
 	transform: scale(1);
 }
@@ -500,7 +507,7 @@ footer {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(107, 107, 107, 0.9);
+	background-color: rgba(7, 7, 7, 0.9);
 	min-height: 100vh;
 	height: 100%;
 }
@@ -509,10 +516,10 @@ footer {
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
-	background-color: #333;
+	background-color: #232323;
 	color: #e5e5e5;
 	padding: 2rem;
-
+	width: 50%;
 	border-radius: 0.625rem;
 }
 .details {
@@ -550,6 +557,37 @@ button.yes {
 
 .date {
 	margin-top: 3rem;
+}
+
+.search-bar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 2rem;
+	width: 300px; /* Initial width */
+	transition: width 0.5s ease;
+}
+
+.search-bar.focused {
+	width: 80%; /* Full width when focused */
+}
+
+.search-bar input {
+	width: 100%;
+	transition: width 0.5s ease;
+	opacity: 1;
+	margin: 0;
+}
+
+.search-bar button {
+	width: 3rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 2.8rem;
+	margin-left: 1rem;
+	opacity: 1;
+	transition: opacity 0.5s ease;
 }
 
 @media print {

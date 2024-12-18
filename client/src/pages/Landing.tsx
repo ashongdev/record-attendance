@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import EnterAuthKey from "../components/EnterAuthKey";
 import "../styles/Landing.css";
 
 const Landing = () => {
@@ -20,9 +21,7 @@ const Landing = () => {
 		}
 	};
 
-	// const wakeServer = () => {
-	// 	Axios.get("")
-	// }
+	const [showAuthDialog, setShowAuthDialog] = useState(false);
 
 	useEffect(() => {
 		localStorage.removeItem("lec_autofill_details");
@@ -36,14 +35,16 @@ const Landing = () => {
 			<h1>Welcome to the Attendance Tracker</h1>
 			<span>Select your role to get started:</span>
 			<div className="roles">
-				<Link to="/autofill/lec/details">
+				<Link to="">
 					<button
 						className="role-button lecturer"
-						onClick={() => handleClick("Lecturer")}
+						onClick={() => setShowAuthDialog(true)}
 					>
 						I am a Lecturer
 					</button>
 				</Link>
+
+				{showAuthDialog && <EnterAuthKey />}
 
 				<Link to="/autofill/std/details">
 					<button

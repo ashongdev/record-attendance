@@ -83,22 +83,32 @@ export const updateLastChecked = async (req: Request, res: Response): Promise<vo
 	const { groupid, coursecode, date, studentId } = req.body;
 
 	try {
-		const sql = await pool.query(
+		await pool.query(
 			`UPDATE LECTURERS SET LAST_CHECKED = $1 WHERE GROUPID = $2 AND COURSECODE = $3`,
 			[date, groupid, coursecode]
 		);
-		const resp = await pool.query(`SELECT CHECKED FROM STUDENTS WHERE INDEXNUMBER = $1`, [
+		const isChecked = await pool.query(`SELECT CHECKED FROM STUDENTS WHERE INDEXNUMBER = $1`, [
 			studentId,
 		]);
-
-		await pool.query(
-			`UPDATE STUDENTS SET LAST_CHECKED = $1, CHECKED = ${
-				resp.rows[0].checked === "false" ? "true" : "false"
-			} WHERE INDEXNUMBER = $2`,
-			[date, studentId]
+		const students = await pool.query(
+			`SELECT * FROM STUDENTS WHERE COURSECODE = $1 AND GROUPID = $2 ORDER BY FULLNAME`,
+			[coursecode, groupid]
 		);
 
-		res.status(200).json(sql.rows);
+		if (isChecked.rowCount === 1) {
+			await pool.query(
+				`UPDATE STUDENTS SET LAST_CHECKED = $1, CHECKED = ${
+					isChecked.rows[0].checked === "false" ? "true" : "false"
+				} WHERE INDEXNUMBER = $2`,
+				[date, studentId]
+			);
+		} else {
+			res.status(404).json({
+				msg: "The student you are trying to mark is not present in the system.",
+			});
+		}
+
+		res.status(200).json(students.rows);
 	} catch (error) {
 		console.log("🚀 ~ getLecturerLocation ~ error:", error);
 		res.status(404).json(error);
@@ -117,6 +127,30 @@ export const getStudents = async (req: Request, res: Response): Promise<void> =>
 		res.status(200).json(sql.rows);
 	} catch (error) {
 		console.log("🚀 ~ getLecturerLocation ~ error:", error);
+		res.status(404).json(error);
+	}
+};
+
+export const authenticate = async (req: Request, res: Response): Promise<void> => {
+	const { key } = req.params;
+
+	const id = key.split("-")[0];
+	const coursename = key.split("-")[1] + "-" + key.split("-")[2];
+
+	try {
+		const isAuthorized = await pool.query(
+			`SELECT * FROM AUTHID WHERE ID = $1 AND UPPER(COURSECODE) = UPPER($2)`,
+			[id, coursename]
+		);
+		if (isAuthorized.rowCount === 1) {
+			res.status(200).json({ msg: "Request authorized" });
+		} else {
+			res.status(400).json({
+				msg: "Request not authorized. Please see your faculty head to get the auth key for your course.",
+			});
+		}
+	} catch (error) {
+		console.log("🚀 ~ authenticate ~ error:", error);
 		res.status(404).json(error);
 	}
 };

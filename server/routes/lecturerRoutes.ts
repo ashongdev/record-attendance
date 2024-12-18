@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+	authenticate,
 	getDetails,
 	getStudents,
 	registerCourse,
@@ -7,6 +8,8 @@ import {
 } from "../controllers/lecturerController";
 
 export const router = Router();
+
+router.get("/lec/auth/:key", authenticate);
 
 router.post("/lec/get-students", getStudents);
 

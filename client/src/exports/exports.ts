@@ -26,10 +26,11 @@ interface ContextType {
 	role: "Lecturer" | "Student";
 	lecAutofillDetails: Omit<LecturerType, "checked">;
 	stdAutofillDetails: CheckInType;
+	authenticate: (key: string, coursename: string) => void;
 }
 
 export interface RegisterType
-	extends Omit<Entity, "last_checked" | "long" | "lat" | "indexnumber" | "id"> {
+	extends Omit<Entity, "last_checked" | "long" | "lat" | "indexnumber" | "id" | "checked"> {
 	coursename: string;
 }
 
