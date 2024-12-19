@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
-// import * as XLSX from "xlsx";
-// import { Entity } from "../exports/exports";
+ import * as XLSX from "xlsx";
+ import { Entity } from "../exports/exports";
 
 const StudentList = () => {
 	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
@@ -93,43 +93,43 @@ const StudentList = () => {
 	};
 	const [isInputFocused, setIsInputFocused] = useState(false);
 
-	// const generateExcelFile = (studentList: Entity[]) => {
-	// 	try {
-	// 		const data = [
-	// 			[
-	// 				`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
-	// 					lecAutofillDetails?.groupid
-	// 				} as at ${new Date().toDateString()} ${currentDate}`,
-	// 			],
-	// 			[""],
-	// 			["No.", "Index Number", "Full Name", "Status"],
-	// 		];
+	const generateExcelFile = (studentList: Entity[]) => {
+		try {
+			const data = [
+				[
+					`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
+						lecAutofillDetails?.groupid
+					} as at ${new Date().toDateString()} ${currentDate}`,
+				],
+				[""],
+				["No.", "Index Number", "Full Name", "Status"],
+			];
 
-	// 		studentList.forEach((student: Entity, index) => {
-	// 			data.push([
-	// 				(index + 1).toString(),
-	// 				student.indexnumber,
-	// 				student.fullname,
-	// 				student.checked === true ? "Present" : "Absent",
-	// 			]);
-	// 		});
+			studentList.forEach((student: Entity, index) => {
+				data.push([
+					(index + 1).toString(),
+					student.indexnumber,
+					student.fullname,
+					student.checked === true ? "Present" : "Absent",
+				]);
+			});
 
-	// 		data.push([""]);
-	// 		data.push([`Total Number of Students: ${studentList.length.toString()}`]);
+			data.push([""]);
+			data.push([`Total Number of Students: ${studentList.length.toString()}`]);
 
-	// 		// Create a worksheet
-	// 		const worksheet = XLSX.utils.aoa_to_sheet(data);
+			// Create a worksheet
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-	// 		// Create a workbook and append the worksheet
-	// 		const workbook = XLSX.utils.book_new();
-	// 		XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+			// Create a workbook and append the worksheet
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
-	// 		// Export the workbook as a file
-	// 		XLSX.writeFile(workbook, "Attendance.xlsx");
-	// 	} catch (error) {
-	// 		console.log("Error generating excel file");
-	// 	}
-	// };
+			// Export the workbook as a file
+			XLSX.writeFile(workbook, "Attendance.xlsx");
+		} catch (error) {
+			console.log("Error generating excel file");
+		}
+	};
 
 	useEffect(() => {
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
@@ -166,7 +166,7 @@ const StudentList = () => {
 
 						<button
 							className="refresh-btn"
-							// onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
+							 onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
 						>
 							Generate Report
 						</button>
