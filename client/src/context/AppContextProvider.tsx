@@ -21,7 +21,8 @@ const Context = ({ children }: { children: ReactNode }) => {
 
 		try {
 			const auth = await Axios.get(
-				`http://localhost:4402/lec/auth/${key + "-" + coursename}`
+				// `http://localhost:4402/lec/auth/${key + "-" + coursename}`
+				`https://record-attendance.onrender.com/lec/auth/${key + "-" + coursename}`
 			);
 
 			if (auth.data.msg === "Request authorized") {
