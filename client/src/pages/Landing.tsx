@@ -27,6 +27,9 @@ const Landing = () => {
 		localStorage.removeItem("lec_autofill_details");
 		localStorage.removeItem("std_autofill_details");
 		localStorage.removeItem("checkin-data");
+		localStorage.removeItem("studentList");
+		localStorage.removeItem("auth");
+		localStorage.removeItem("role");
 		localStorage.removeItem("checkedin?");
 	}, []);
 

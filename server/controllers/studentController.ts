@@ -38,6 +38,11 @@ export const checkIn = async (req: Request, res: Response) => {
 					indexnumber,
 				]);
 
+				await pool.query(
+					`INSERT INTO ATTENDANCE (ID, STUDENT_ID, IS_PRESENT, GROUPID, COURSECODE) VALUES ($1, $2, $3, $4, $5)`,
+					[randomID, indexnumber, false, groupid.toUpperCase(), coursecode.toUpperCase()]
+				);
+
 				res.status(200).json({ msg: "Student data recorded." });
 			}
 		} else {
