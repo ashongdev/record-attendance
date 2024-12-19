@@ -59,8 +59,8 @@ const RegisterCourse = () => {
 		setLoading(true);
 		try {
 			const response = await Axios.post(
-				"http://localhost:4402/register-course",
-				// "https://record-attendance.onrender.com/register-course",
+				// "http://localhost:4402/register-course",
+				"https://record-attendance.onrender.com/register-course",
 				newFormInput
 			);
 
