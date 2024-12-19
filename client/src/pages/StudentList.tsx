@@ -1,14 +1,15 @@
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
+// import * as XLSX from "xlsx";
+// import { Entity } from "../exports/exports";
 
 const StudentList = () => {
-	const { studentList, setStudentList, lecAutofillDetails, authenticate } = useContextProvider();
+	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
+		useContextProvider();
 	const { getStorageItem } = useFunctions();
 
 	const currentDate = new Date().toLocaleString();
@@ -16,6 +17,7 @@ const StudentList = () => {
 	const searchRef = useRef<HTMLInputElement>(null);
 	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
 
+	const storedStudentList = getStorageItem("studentList", null);
 	const searchStudent = () => {
 		const trimmedSearchValue = searchValue.trim();
 		setSearchValue(trimmedSearchValue);
@@ -30,26 +32,21 @@ const StudentList = () => {
 		);
 
 		if (exactMatches.length > 0) {
-			console.log("Match", exactMatches);
-			setFilteredStudentList(exactMatches);
+			setFilteredStudentList(storedStudentList);
 			return;
 		}
 
 		if (exactMatches.length < 1) {
-			console.log("No match", exactMatches.length);
 			setFilteredStudentList([]);
 
 			return;
 		}
 	};
 
-	const { key, coursename }: { status: boolean; key: string; coursename: string } =
-		getStorageItem("auth", null);
+	const auth: { status: boolean; key: string; coursename: string } = getStorageItem("auth", null);
 
 	useEffect(() => {
-		if (!key && !coursename) return;
-
-		authenticate(key, coursename);
+		authenticate(auth.key, auth.coursename);
 	}, []);
 
 	useEffect(() => {
@@ -60,18 +57,26 @@ const StudentList = () => {
 		try {
 			const res = await Axios.post(
 				`https://record-attendance.onrender.com/lec/get-students`,
-				// `http://localhost:4402/lec/get-students`,
+				// `http://localhost:4000/lec/get-students`,
 				{ groupid, coursecode }
 			);
 
-			const data: Entity[] = res.data;
+			const data = res.data;
 			if (data) {
-				setStudentList(res.data);
+				setStudentList(data);
+
+				localStorage.setItem("studentList", JSON.stringify(data));
 			}
 		} catch (error) {
 			console.log("🚀 ~ getStudents ~ error:", error);
 		}
 	};
+
+	useEffect(() => {
+		socket.on("updateLastChecked", () => {
+			getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode);
+		});
+	}, []);
 
 	const updateLastChecked = async (
 		date: Date,
@@ -80,62 +85,51 @@ const StudentList = () => {
 		studentId?: string
 	) => {
 		try {
-			const res = await Axios.post(
-				`https://record-attendance.onrender.com/lec/last-checked`,
-				// `http://localhost:4402/lec/last-checked`,
-				{ date, coursecode, groupid, studentId }
-			);
-
-			const data: Entity[] = res.data;
-
-			if (data) {
-				setStudentList(data);
-			}
-
-			localStorage.setItem("date", JSON.stringify(date.getDate()));
+			socket.emit("updateLastChecked", { date, coursecode, groupid, studentId });
 		} catch (error) {
+			alert("An unexpected error occurred. Please try again.");
 			console.log("🚀 ~ getStudents ~ error:", error);
 		}
 	};
 	const [isInputFocused, setIsInputFocused] = useState(false);
 
-	const generateExcelFile = (studentList: Entity[]) => {
-		try {
-			const data = [
-				[
-					`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
-						lecAutofillDetails?.groupid
-					} as at ${new Date().toDateString()} ${currentDate}`,
-				],
-				[""],
-				["No.", "Index Number", "Full Name", "Status"],
-			];
+	// const generateExcelFile = (studentList: Entity[]) => {
+	// 	try {
+	// 		const data = [
+	// 			[
+	// 				`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
+	// 					lecAutofillDetails?.groupid
+	// 				} as at ${new Date().toDateString()} ${currentDate}`,
+	// 			],
+	// 			[""],
+	// 			["No.", "Index Number", "Full Name", "Status"],
+	// 		];
 
-			studentList.forEach((student: Entity, index) => {
-				data.push([
-					(index + 1).toString(),
-					student.indexnumber,
-					student.fullname,
-					student.checked === "true" ? "Present" : "Absent",
-				]);
-			});
+	// 		studentList.forEach((student: Entity, index) => {
+	// 			data.push([
+	// 				(index + 1).toString(),
+	// 				student.indexnumber,
+	// 				student.fullname,
+	// 				student.checked === true ? "Present" : "Absent",
+	// 			]);
+	// 		});
 
-			data.push([""]);
-			data.push([`Total Number of Students: ${studentList.length.toString()}`]);
+	// 		data.push([""]);
+	// 		data.push([`Total Number of Students: ${studentList.length.toString()}`]);
 
-			// Create a worksheet
-			const worksheet = XLSX.utils.aoa_to_sheet(data);
+	// 		// Create a worksheet
+	// 		const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-			// Create a workbook and append the worksheet
-			const workbook = XLSX.utils.book_new();
-			XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+	// 		// Create a workbook and append the worksheet
+	// 		const workbook = XLSX.utils.book_new();
+	// 		XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
-			// Export the workbook as a file
-			XLSX.writeFile(workbook, "Attendance.xlsx");
-		} catch (error) {
-			console.log("Error generating excel file");
-		}
-	};
+	// 		// Export the workbook as a file
+	// 		XLSX.writeFile(workbook, "Attendance.xlsx");
+	// 	} catch (error) {
+	// 		console.log("Error generating excel file");
+	// 	}
+	// };
 
 	useEffect(() => {
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
@@ -172,7 +166,7 @@ const StudentList = () => {
 
 						<button
 							className="refresh-btn"
-							onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
+							// onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
 						>
 							Generate Report
 						</button>
@@ -270,11 +264,7 @@ const StudentList = () => {
 													}}
 													defaultChecked={
 														new Date(last_checked).toDateString() ===
-														new Date().toDateString()
-															? checked === "true"
-																? true
-																: false
-															: false
+															new Date().toDateString() && checked
 													}
 												/>
 											</td>
@@ -288,37 +278,39 @@ const StudentList = () => {
 									(
 										{ fullname, id, indexnumber, last_checked, checked },
 										index
-									) => (
-										<tr
-											className="list"
-											key={id}
-										>
-											<td>{index + 1}</td>
-											<td>{fullname}</td>
-											<td>{indexnumber}</td>
-											<td>
-												<input
-													type="checkbox"
-													onClick={() => {
-														updateLastChecked(
-															new Date(),
-															lecAutofillDetails.coursecode,
-															lecAutofillDetails.groupid,
-															indexnumber
-														);
-													}}
-													defaultChecked={
-														new Date(last_checked).toDateString() ===
-														new Date().toDateString()
-															? checked === "true"
-																? true
+									) => {
+										return (
+											<tr
+												className="list"
+												key={id}
+											>
+												<td>{index + 1}</td>
+												<td>{fullname}</td>
+												<td>{indexnumber}</td>
+												<td>
+													<input
+														type="checkbox"
+														onClick={() => {
+															updateLastChecked(
+																new Date(),
+																lecAutofillDetails.coursecode,
+																lecAutofillDetails.groupid,
+																indexnumber
+															);
+														}}
+														defaultChecked={
+															new Date(
+																last_checked
+															).toDateString() ===
+															new Date().toDateString()
+																? checked
 																: false
-															: false
-													}
-												/>
-											</td>
-										</tr>
-									)
+														}
+													/>
+												</td>
+											</tr>
+										);
+									}
 							  )}
 					</tbody>
 				</table>

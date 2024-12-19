@@ -34,8 +34,7 @@ const RegisterCourse = () => {
 		getStorageItem("lec_autofill_details", null)
 	);
 
-	const { key, coursename }: { status: boolean; key: string; coursename: string } =
-		getStorageItem("auth", null);
+	const auth: { status: boolean; key: string; coursename: string } = getStorageItem("auth", null);
 
 	useEffect(() => {
 		if (data) {
@@ -44,9 +43,9 @@ const RegisterCourse = () => {
 			setValue("fullname", data.fullname);
 		}
 
-		if (!key && !coursename) return;
+		if (!auth.key && !auth.coursename) return;
 
-		authenticate(key, coursename);
+		authenticate(auth.key, auth.coursename);
 	}, []);
 
 	// Handle form submission
@@ -59,12 +58,12 @@ const RegisterCourse = () => {
 		setLoading(true);
 		try {
 			const response = await Axios.post(
-				// "http://localhost:4402/register-course",
+				// "http://localhost:4000/register-course",
 				"https://record-attendance.onrender.com/register-course",
 				newFormInput
 			);
 
-			if (response.data && response.data.coursename) {
+			if (response.data) {
 				localStorage.setItem("lec_autofill_details", JSON.stringify(response.data));
 				setData(response.data);
 

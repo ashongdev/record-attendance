@@ -1,4 +1,5 @@
 import { createContext, Dispatch, SetStateAction } from "react";
+import { Socket } from "socket.io-client";
 
 export interface Entity {
 	id: string;
@@ -9,7 +10,7 @@ export interface Entity {
 	last_checked: Date;
 	long: number;
 	lat: number;
-	checked: string;
+	checked: boolean;
 }
 
 export interface LecturerType extends Omit<Entity, "indexnumber"> {
@@ -27,6 +28,7 @@ interface ContextType {
 	lecAutofillDetails: Omit<LecturerType, "checked">;
 	stdAutofillDetails: CheckInType;
 	authenticate: (key: string, coursename: string) => void;
+	socket: Socket;
 }
 
 export interface RegisterType
