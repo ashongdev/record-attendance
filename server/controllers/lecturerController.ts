@@ -51,7 +51,7 @@ export const registerCourse = async (req: Request, res: Response) => {
 };
 
 export const getDetails = async (req: Request, res: Response): Promise<any> => {
-	const { data, lecturerLatitude, lecturerLongitude } = req.body;
+	const { data } = req.body;
 	const { fullname, coursecode, coursename, groupid } = data;
 
 	try {
@@ -79,40 +79,59 @@ export const getDetails = async (req: Request, res: Response): Promise<any> => {
 	}
 };
 
-export const updateLastChecked = async (req: Request, res: Response): Promise<void> => {
-	const { groupid, coursecode, date, studentId } = req.body;
+export const updateLastChecked = async (data: any, io: any): Promise<void> => {
+	const { groupid, coursecode, date, studentId } = data;
+	const randomID = uuid();
 
-	try {
-		await pool.query(
-			`UPDATE LECTURERS SET LAST_CHECKED = $1 WHERE GROUPID = $2 AND COURSECODE = $3`,
-			[date, groupid, coursecode]
-		);
-		const isChecked = await pool.query(`SELECT CHECKED FROM STUDENTS WHERE INDEXNUMBER = $1`, [
-			studentId,
-		]);
-		const students = await pool.query(
-			`SELECT * FROM STUDENTS WHERE COURSECODE = $1 AND GROUPID = $2 ORDER BY FULLNAME`,
-			[coursecode, groupid]
-		);
+	// try {
+	// 	if (!data) {
+	// 		throw new Error("No data provided for this operation");
+	// 	}
 
-		if (isChecked.rowCount === 1) {
-			await pool.query(
-				`UPDATE STUDENTS SET LAST_CHECKED = $1, CHECKED = ${
-					isChecked.rows[0].checked === "false" ? "true" : "false"
-				} WHERE INDEXNUMBER = $2`,
-				[date, studentId]
-			);
-		} else {
-			res.status(404).json({
-				msg: "The student you are trying to mark is not present in the system.",
-			});
-		}
+	// 	const isStudentChecked = await pool.query(
+	// 		`SELECT * FROM ATTENDANCE WHERE STUDENT_ID = $1`,
+	// 		[studentId]
+	// 	);
 
-		res.status(200).json(students.rows);
-	} catch (error) {
-		console.log("🚀 ~ getLecturerLocation ~ error:", error);
-		res.status(404).json(error);
-	}
+	// 	if (isStudentChecked.rowCount) {
+	// 		for (let index = 0; index < isStudentChecked.rowCount; index++) {
+	// 			const currentRow = isStudentChecked.rows[index];
+
+	// 			const isSameDay =
+	// 				new Date(currentRow.marked_at).toDateString() === new Date(date).toDateString();
+
+	// 			if (isSameDay) {
+	// 				const updateStatus = await pool.query(
+	// 					`UPDATE ATTENDANCE SET IS_PRESENT = $1 WHERE STUDENT_ID = $2 AND DATE(MARKED_AT) = DATE($3) RETURNING IS_PRESENT`,
+	// 					[!currentRow.is_present, studentId, date]
+	// 				);
+
+	// 				// Check indexnumber, group and coursecode,and maybe date on attendance
+	// 				await pool.query(
+	// 					`UPDATE STUDENTS SET LAST_CHECKED = $1, CHECKED = $2 WHERE INDEXNUMBER = $3 RETURNING CHECKED`,
+	// 					[date, updateStatus.rows[0].is_present, studentId]
+	// 				);
+
+	// 				return;
+	// 			} else {
+	// 				await pool.query(
+	// 					`INSERT INTO ATTENDANCE (ID, STUDENT_ID, IS_PRESENT, GROUPID, COURSECODE) VALUES ($1, $2, $3, $4, $5)`,
+	// 					[randomID, studentId, true, groupid.toUpperCase(), coursecode.toUpperCase()]
+	// 				);
+
+	// 				return;
+	// 			}
+	// 		}
+
+	// 		return;
+	// 	}
+	// } catch (error) {
+	// 	console.log("🚀 ~ updateLastChecked ~ error:", error);
+
+	// 	io.emit("updateLastChecked", error);
+
+	// 	return;
+	// }
 };
 
 export const getStudents = async (req: Request, res: Response): Promise<void> => {
@@ -125,8 +144,10 @@ export const getStudents = async (req: Request, res: Response): Promise<void> =>
 		);
 
 		res.status(200).json(sql.rows);
+
+		return;
 	} catch (error) {
-		console.log("🚀 ~ getLecturerLocation ~ error:", error);
+		console.log("🚀 ~ getStudents ~ error:", error);
 		res.status(404).json(error);
 	}
 };
