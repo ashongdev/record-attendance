@@ -17,9 +17,6 @@ const Context = ({ children }: { children: ReactNode }) => {
 	const lecAutofillDetails = getStorageItem("lec_autofill_details", null);
 	const stdAutofillDetails = getStorageItem("std_autofill_details", null);
 
-	const [lecturerLongitude, setLecturerLongitude] = useState(0);
-	const [lecturerLatitude, setLecturerLatitude] = useState(0);
-
 	const authenticate = async (key: string, coursename: string) => {
 		if (!key || !coursename) {
 			window.location.href = "/";
@@ -32,21 +29,22 @@ const Context = ({ children }: { children: ReactNode }) => {
 				`https://record-attendance.onrender.com/lec/auth/${key}-${coursename}`
 			);
 
-			// if (response.data.msg === "Request authorized") {
-			// 	localStorage.setItem("role", JSON.stringify("Lecturer"));
-			// 	localStorage.setItem("auth", JSON.stringify({ status: true, key, coursename }));
+			// !Generate reports for individual students
+			if (response.data.msg === "Request authorized") {
+				localStorage.setItem("role", JSON.stringify("Lecturer"));
+				localStorage.setItem("auth", JSON.stringify({ status: true, key, coursename }));
 
-			// 	if (
-			// 		window.location.pathname === "/lec/home" ||
-			// 		window.location.pathname === "/lec/register"
-			// 	) {
-			// 		return true;
-			// 	} else {
-			// 		window.location.href = "/";
-			// 	}
+				if (
+					window.location.pathname === "/lec/home" ||
+					window.location.pathname === "/lec/register"
+				) {
+					return true;
+				} else {
+					window.location.href = "/autofill/lec/details";
+				}
 
-			// 	return true;
-			// }
+				return true;
+			}
 
 			throw new Error("Unauthorized request");
 		} catch (error) {
@@ -70,10 +68,6 @@ const Context = ({ children }: { children: ReactNode }) => {
 			value={{
 				studentList,
 				setStudentList,
-				lecturerLongitude,
-				setLecturerLongitude,
-				lecturerLatitude,
-				setLecturerLatitude,
 				role,
 				lecAutofillDetails,
 				stdAutofillDetails,

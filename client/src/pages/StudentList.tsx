@@ -1,11 +1,12 @@
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import * as XLSX from "xlsx";
+import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
-// import * as XLSX from "xlsx";
-// import { Entity } from "../exports/exports";
+import History from "./History";
 
 const StudentList = () => {
 	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
@@ -16,6 +17,8 @@ const StudentList = () => {
 	const [searchValue, setSearchValue] = useState("");
 	const searchRef = useRef<HTMLInputElement>(null);
 	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
+	const [showStudentHistory, setShowStudentHistory] = useState(false);
+	const [historyQueryIndex, setHistoryQueryIndex] = useState("");
 
 	const storedStudentList = getStorageItem("studentList", null);
 	const searchStudent = () => {
@@ -46,10 +49,6 @@ const StudentList = () => {
 	const auth: { status: boolean; key: string; coursename: string } = getStorageItem("auth", null);
 
 	useEffect(() => {
-		authenticate(auth.key, auth.coursename);
-	}, []);
-
-	useEffect(() => {
 		searchStudent();
 	}, [searchValue]);
 
@@ -73,6 +72,13 @@ const StudentList = () => {
 	};
 
 	useEffect(() => {
+		if (!auth.key || !auth.coursename) {
+			window.location.href = "/";
+
+			return;
+		}
+		authenticate(auth.key, auth.coursename);
+
 		socket.on("updateLastChecked", () => {
 			getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode);
 		});
@@ -93,43 +99,43 @@ const StudentList = () => {
 	};
 	const [isInputFocused, setIsInputFocused] = useState(false);
 
-	// const generateExcelFile = (studentList: Entity[]) => {
-	// 	try {
-	// 		const data = [
-	// 			[
-	// 				`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
-	// 					lecAutofillDetails?.groupid
-	// 				} as at ${new Date().toDateString()} ${currentDate}`,
-	// 			],
-	// 			[""],
-	// 			["No.", "Index Number", "Full Name", "Status"],
-	// 		];
+	const generateExcelFile = (studentList: Entity[]) => {
+		try {
+			const data = [
+				[
+					`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
+						lecAutofillDetails?.groupid
+					} as at ${new Date().toDateString()} ${currentDate}`,
+				],
+				[""],
+				["No.", "Index Number", "Full Name", "Status"],
+			];
 
-	// 		studentList.forEach((student: Entity, index) => {
-	// 			data.push([
-	// 				(index + 1).toString(),
-	// 				student.indexnumber,
-	// 				student.fullname,
-	// 				student.checked === true ? "Present" : "Absent",
-	// 			]);
-	// 		});
+			studentList.forEach((student: Entity, index) => {
+				data.push([
+					(index + 1).toString(),
+					student.indexnumber,
+					student.fullname,
+					student.checked === true ? "Present" : "Absent",
+				]);
+			});
 
-	// 		data.push([""]);
-	// 		data.push([`Total Number of Students: ${studentList.length.toString()}`]);
+			data.push([""]);
+			data.push([`Total Number of Students: ${studentList.length.toString()}`]);
 
-	// 		// Create a worksheet
-	// 		const worksheet = XLSX.utils.aoa_to_sheet(data);
+			// Create a worksheet
+			const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-	// 		// Create a workbook and append the worksheet
-	// 		const workbook = XLSX.utils.book_new();
-	// 		XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+			// Create a workbook and append the worksheet
+			const workbook = XLSX.utils.book_new();
+			XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
 
-	// 		// Export the workbook as a file
-	// 		XLSX.writeFile(workbook, "Attendance.xlsx");
-	// 	} catch (error) {
-	// 		console.log("Error generating excel file");
-	// 	}
-	// };
+			// Export the workbook as a file
+			XLSX.writeFile(workbook, "Attendance.xlsx");
+		} catch (error) {
+			console.log("Error generating excel file");
+		}
+	};
 
 	useEffect(() => {
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
@@ -166,7 +172,7 @@ const StudentList = () => {
 
 						<button
 							className="refresh-btn"
-							// onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
+							onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
 						>
 							Generate Report
 						</button>
@@ -227,6 +233,13 @@ const StudentList = () => {
 				</>
 			)}
 
+			{showStudentHistory && (
+				<History
+					historyQueryIndex={historyQueryIndex}
+					setShowStudentHistory={setShowStudentHistory}
+				/>
+			)}
+
 			<div className="display-list">
 				<table>
 					<thead>
@@ -283,6 +296,11 @@ const StudentList = () => {
 											<tr
 												className="list"
 												key={id}
+												onClick={() => {
+													setShowStudentHistory(true);
+													setHistoryQueryIndex(indexnumber);
+												}}
+												title="Click to view student attendance history"
 											>
 												<td>{index + 1}</td>
 												<td>{fullname}</td>
