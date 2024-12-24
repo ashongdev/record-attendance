@@ -173,7 +173,8 @@ const updateLastChecked = async (data: any, io: any): Promise<void> => {
 
 		return;
 	}
-};
+}
+
 
 const getStudents = async (req: Request, res: Response): Promise<void> => {
 	const { groupid, coursecode } = req.body;
@@ -192,6 +193,7 @@ const getStudents = async (req: Request, res: Response): Promise<void> => {
 		res.status(404).json(error);
 	}
 };
+
 
 const getStudentsHistory = async (req: Request, res: Response): Promise<void> => {
 	const { studentId } = req.params;
@@ -217,6 +219,7 @@ const getStudentsHistory = async (req: Request, res: Response): Promise<void> =>
 
 		return;
 	} catch (error) {
+		console.log("🚀 ~ getStudents ~ error:", error);
 		console.log("🚀 ~ getStudents ~ error:", error);
 		res.status(404).json(error);
 	}
@@ -246,11 +249,13 @@ const authenticate = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+
 export {
 	authenticate,
 	getDetails,
 	getStudents,
 	getStudentsHistory,
 	registerCourse,
-	updateLastChecked,
+	updateLastChecked
 };
+

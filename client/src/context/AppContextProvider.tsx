@@ -33,20 +33,7 @@ const Context = ({ children }: { children: ReactNode }) => {
 			if (response.data.msg === "Request authorized") {
 				localStorage.setItem("role", JSON.stringify("Lecturer"));
 				localStorage.setItem("auth", JSON.stringify({ status: true, key, coursename }));
-
-				if (
-					window.location.pathname === "/lec/home" ||
-					window.location.pathname === "/lec/register"
-				) {
-					return true;
-				} else {
-					window.location.href = "/autofill/lec/details";
-				}
-
-				return true;
 			}
-
-			throw new Error("Unauthorized request");
 		} catch (error) {
 			console.error("Authentication error:", error);
 
