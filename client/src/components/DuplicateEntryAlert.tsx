@@ -1,7 +1,6 @@
 import Axios from "axios";
 import { Dispatch, FC, SetStateAction } from "react";
 import { RegisterType } from "../exports/exports";
-import useContextProvider from "../hooks/useContextProvider";
 
 interface Props {
 	data: RegisterType | null;
@@ -9,7 +8,6 @@ interface Props {
 }
 
 const DuplicateEntryAlert: FC<Props> = ({ setShowDuplicateEntryAlert, data }) => {
-	const { lecturerLatitude, lecturerLongitude } = useContextProvider();
 	const getDetails = async () => {
 		try {
 			const response = await Axios.post(

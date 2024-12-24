@@ -15,15 +15,12 @@ export interface Entity {
 
 export interface LecturerType extends Omit<Entity, "indexnumber"> {
 	coursename: string;
+	noOfTimes: number;
 }
 
 interface ContextType {
 	studentList: Entity[] | [];
 	setStudentList: Dispatch<SetStateAction<Entity[] | []>>;
-	lecturerLatitude: number;
-	setLecturerLatitude: Dispatch<SetStateAction<number>>;
-	lecturerLongitude: number;
-	setLecturerLongitude: Dispatch<SetStateAction<number>>;
 	role: "Lecturer" | "Student";
 	lecAutofillDetails: Omit<LecturerType, "checked">;
 	stdAutofillDetails: CheckInType;
@@ -34,6 +31,7 @@ interface ContextType {
 export interface RegisterType
 	extends Omit<Entity, "last_checked" | "long" | "lat" | "indexnumber" | "id" | "checked"> {
 	coursename: string;
+	noOfTimes: number;
 }
 
 export interface CheckInType
