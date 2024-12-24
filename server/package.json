@@ -21,7 +21,8 @@
 		"mongoose": "^8.8.0",
 		"pg": "^8.13.1",
 		"socket.io": "^4.8.1",
-		"uuid": "^11.0.3"
+		"uuid": "^11.0.3",
+		"express-rate-limit": "^7.5.0"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
