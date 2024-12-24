@@ -173,8 +173,7 @@ const updateLastChecked = async (data: any, io: any): Promise<void> => {
 
 		return;
 	}
-}
-
+};
 
 const getStudents = async (req: Request, res: Response): Promise<void> => {
 	const { groupid, coursecode } = req.body;
@@ -193,7 +192,6 @@ const getStudents = async (req: Request, res: Response): Promise<void> => {
 		res.status(404).json(error);
 	}
 };
-
 
 const getStudentsHistory = async (req: Request, res: Response): Promise<void> => {
 	const { studentId } = req.params;
@@ -249,13 +247,11 @@ const authenticate = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-
 export {
 	authenticate,
 	getDetails,
 	getStudents,
 	getStudentsHistory,
 	registerCourse,
-	updateLastChecked
+	updateLastChecked,
 };
-
