@@ -7,8 +7,6 @@ export interface Entity {
 	groupid: string;
 	coursecode: string;
 	last_checked: Date;
-	long: number;
-	lat: number;
 	checked: string;
 }
 

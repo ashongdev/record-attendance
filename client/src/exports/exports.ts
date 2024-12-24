@@ -8,14 +8,12 @@ export interface Entity {
 	groupid: string;
 	coursecode: string;
 	last_checked: Date;
-	long: number;
-	lat: number;
 	checked: boolean;
 }
 
 export interface LecturerType extends Omit<Entity, "indexnumber"> {
 	coursename: string;
-	noOfTimes: number;
+	no_of_meetings: number;
 }
 
 interface ContextType {
@@ -29,13 +27,12 @@ interface ContextType {
 }
 
 export interface RegisterType
-	extends Omit<Entity, "last_checked" | "long" | "lat" | "indexnumber" | "id" | "checked"> {
+	extends Omit<Entity, "last_checked" | "indexnumber" | "id" | "checked"> {
 	coursename: string;
-	noOfTimes: number;
+	no_of_meetings: number;
 }
 
-export interface CheckInType
-	extends Omit<Entity, "last_checked" | "long" | "lat" | "id" | "checked"> {}
+export interface CheckInType extends Omit<Entity, "last_checked" | "id" | "checked"> {}
 
 export interface LocationType
 	extends Omit<Entity, "last_checked" | "indexnumber" | "groupid" | "fullname" | "coursecode"> {}

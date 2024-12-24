@@ -5,8 +5,7 @@ import { pool } from "../db";
 import { LecturerType } from "../exports/exports";
 
 const registerCourse = async (req: Request, res: Response) => {
-	const { fullname, coursecode, coursename, last_checked, groupid } = req.body;
-
+	const { fullname, coursecode, coursename, last_checked, groupid, no_of_meetings } = req.body;
 	const randomID = uuid();
 
 	const check: QueryResult<LecturerType> = await pool.query(
@@ -23,22 +22,19 @@ const registerCourse = async (req: Request, res: Response) => {
 		res.status(403).json("Double Entry Detected.");
 	} else {
 		try {
-			await pool.query(`INSERT INTO LECTURERS VALUES ($1, $2, $3, $4, $5, $6)`, [
-				randomID,
-				coursecode.toUpperCase(),
-				fullname.toUpperCase(),
-				groupid.toUpperCase(),
-				last_checked,
-				coursename.toUpperCase(),
-			]);
-
-			const sql: QueryResult<LecturerType> = await pool.query(
-				`SELECT  ID, COURSENAME, COURSECODE, FULLNAME, GROUPID FROM LECTURERS WHERE FULLNAME = $1 AND COURSENAME = $2 AND GROUPID = $3 AND COURSECODE = $4`,
+			const sql = await pool.query(
+				`INSERT INTO LECTURERS (
+					ID, COURSECODE, FULLNAME, GROUPID, COURSENAME, LAST_CHECKED, NO_OF_MEETINGS
+				) VALUES ($1, $2, $3, $4, $5, $6, $7) 
+				RETURNING ID, COURSENAME, COURSECODE, FULLNAME, GROUPID, NO_OF_MEETINGS`,
 				[
-					fullname.toUpperCase(),
-					coursename.toUpperCase(),
-					groupid.toUpperCase(),
+					randomID,
 					coursecode.toUpperCase(),
+					fullname.toUpperCase(),
+					groupid.toUpperCase(),
+					coursename.toUpperCase(),
+					last_checked,
+					no_of_meetings,
 				]
 			);
 
@@ -61,7 +57,7 @@ const getDetails = async (req: Request, res: Response): Promise<any> => {
 
 	try {
 		const sql = await pool.query(
-			`SELECT ID, COURSECODE, COURSENAME, FULLNAME, GROUPID
+			`SELECT ID, COURSECODE, COURSENAME, FULLNAME, GROUPID, NO_OF_MEETINGS
 				FROM LECTURERS 
 				WHERE UPPER(COURSECODE) = UPPER($1) 
 				  AND UPPER(COURSENAME) = UPPER($2) 
@@ -76,7 +72,6 @@ const getDetails = async (req: Request, res: Response): Promise<any> => {
 
 		const lecturer = sql.rows[0];
 
-		// if (lecturer.lat === lecturerLatitude && lecturer.long === lecturerLongitude) {
 		return res.status(200).json(lecturer);
 	} catch (error) {
 		console.error("🚀 ~ Error in getDetails:", error);
@@ -212,7 +207,10 @@ const getStudentsHistory = async (req: Request, res: Response): Promise<void> =>
 				studentId,
 			]);
 
-			res.status(200).json({ noOfTimes: filteredRows.length, name: name.rows[0].fullname });
+			res.status(200).json({
+				no_of_meetings: filteredRows.length,
+				name: name.rows[0].fullname,
+			});
 		}
 
 		return;

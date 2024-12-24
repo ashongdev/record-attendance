@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import SuccessAlert from "../components/SuccessAlert";
 import { saveLecDataSchema } from "../exports/Schemas";
-import { RegisterType } from "../exports/exports";
+import { LecturerType } from "../exports/exports";
 
 const LecturerDetailsForm = () => {
 	const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -16,11 +16,12 @@ const LecturerDetailsForm = () => {
 		resolver: yupResolver(saveLecDataSchema),
 	});
 
-	const formSubmit = (data: Omit<RegisterType, "groupid">) => {
+	const formSubmit = (
+		data: Omit<LecturerType, "groupid" | "checked" | "id" | "last_checked">
+	) => {
 		if (!data) return;
 
 		localStorage.setItem("lec_autofill_details", JSON.stringify(data));
-		localStorage.setItem("noOfTimes", JSON.stringify(data.noOfTimes));
 
 		setTimeout(() => {
 			window.location.href = "/lec/home";
@@ -76,18 +77,18 @@ const LecturerDetailsForm = () => {
 					<p className="error">{errors.fullname?.message}</p>
 				</div>
 
-				<label htmlFor="fullname">How many time will you be meeting?</label>
+				<label htmlFor="fullname">No of meetings in the semester</label>
 				<div className="group">
 					<input
-						type="number"
+						type="text"
 						id="fullname"
-						{...register("noOfTimes")}
+						{...register("no_of_meetings")}
 						placeholder="e.g., 12"
 						max={12}
-						min={0}
+						min={7}
 						maxLength={2}
 					/>
-					<p className="error">{errors.fullname?.message}</p>
+					<p className="error">{errors.no_of_meetings?.message}</p>
 				</div>
 
 				<div className="group">

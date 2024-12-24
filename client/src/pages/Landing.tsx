@@ -31,6 +31,8 @@ const Landing = () => {
 		localStorage.removeItem("auth");
 		localStorage.removeItem("role");
 		localStorage.removeItem("checkedin?");
+		localStorage.removeItem("no_of_meetings");
+		localStorage.removeItem("studentHistory");
 	}, []);
 
 	return (

@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-export const SignInSchema = yup.object().shape({
+export const RegisterSchema = yup.object().shape({
 	coursecode: yup
 		.string()
 		.required("This field is required")
@@ -19,6 +19,10 @@ export const SignInSchema = yup.object().shape({
 		.string()
 		.matches(/^[A-Za-z]{1}/, "Please select a group")
 		.required(),
+	no_of_meetings: yup
+		.number()
+		.required("This field is required")
+		.positive("Please enter a positive number"),
 });
 
 export const CheckInSchema = yup.object().shape({
@@ -70,5 +74,8 @@ export const saveLecDataSchema = yup.object().shape({
 		.required("This field is required")
 		.min(8, "name must be at least 8 characters")
 		.matches(/^[^!@#$%^&*()_+=]+ [A-Za-z ]+$/, "Please enter a valid name"),
-	noOfTimes: yup.number().required(),
+	no_of_meetings: yup
+		.number()
+		.required("This field is required")
+		.positive("Please enter a positive number"),
 });

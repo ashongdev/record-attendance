@@ -6,7 +6,7 @@ import DuplicateEntryAlert from "../components/DuplicateEntryAlert";
 import ErrorAlert from "../components/ErrorAlert";
 import SuccessAlert from "../components/SuccessAlert";
 import { RegisterType } from "../exports/exports";
-import { SignInSchema } from "../exports/Schemas";
+import { RegisterSchema } from "../exports/Schemas";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 
@@ -20,7 +20,7 @@ const RegisterCourse = () => {
 		setValue,
 		formState: { errors },
 	} = useForm({
-		resolver: yupResolver(SignInSchema),
+		resolver: yupResolver(RegisterSchema),
 	});
 
 	const [error, setError] = useState({ header: "", description: "" });
@@ -41,6 +41,7 @@ const RegisterCourse = () => {
 			setValue("coursename", data.coursename);
 			setValue("coursecode", data.coursecode);
 			setValue("fullname", data.fullname);
+			setValue("no_of_meetings", data.no_of_meetings);
 		}
 
 		if (!auth.key && !auth.coursename) return;
@@ -191,6 +192,21 @@ const RegisterCourse = () => {
 						title={lecAutofillDetails?.fullname && "Has been autofilled."}
 					/>
 					<p className="error">{errors.fullname?.message}</p>
+				</div>
+
+				<label htmlFor="fullname">No of meetings in the semester</label>
+				<div className="group">
+					<input
+						type="text"
+						id="fullname"
+						{...register("no_of_meetings")}
+						placeholder="e.g., 12"
+						max={12}
+						min={7}
+						disabled={lecAutofillDetails?.no_of_meetings ? true : false}
+						maxLength={2}
+					/>
+					<p className="error">{errors.no_of_meetings?.message}</p>
 				</div>
 
 				<div className="group">

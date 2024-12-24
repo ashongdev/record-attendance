@@ -11,9 +11,7 @@ interface Props {
 const History: FC<Props> = ({ historyQueryIndex, setShowStudentHistory }) => {
 	const { lecAutofillDetails } = useContextProvider();
 	const { getStorageItem } = useFunctions();
-	const [historyData, setHistoryData] = useState({ name: "", noOfTimes: 0 });
-
-	const noOfTimes: number = getStorageItem("noOfTimes", null);
+	const [historyData, setHistoryData] = useState({ name: "", no_of_meetings: 0 });
 
 	const getStudentsHistory = async (studentId: string) => {
 		try {
@@ -28,8 +26,15 @@ const History: FC<Props> = ({ historyQueryIndex, setShowStudentHistory }) => {
 			console.log("🚀 ~ getStudents ~ error:", error);
 		}
 	};
+
 	useEffect(() => {
 		getStudentsHistory(historyQueryIndex);
+
+		window.addEventListener("keyup", (e) => {
+			if (e.key === "Escape") {
+				setShowStudentHistory(false);
+			}
+		});
 	}, []);
 
 	return (
@@ -60,11 +65,14 @@ const History: FC<Props> = ({ historyQueryIndex, setShowStudentHistory }) => {
 				<p>{lecAutofillDetails.groupid}</p>
 				<p>
 					Has been to{" "}
-					{((historyData.noOfTimes / Number(noOfTimes) || 0) * 100).toFixed(2)}% of your
-					class
+					{(
+						(historyData.no_of_meetings / Number(lecAutofillDetails.no_of_meetings) ||
+							0) * 100
+					).toFixed(2)}
+					% of your class
 				</p>
 				<p>
-					{historyData.noOfTimes} out of {noOfTimes} times
+					{historyData.no_of_meetings} out of {lecAutofillDetails.no_of_meetings} times
 				</p>
 			</div>
 		</div>
