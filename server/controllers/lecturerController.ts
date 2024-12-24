@@ -173,7 +173,7 @@ const updateLastChecked = async (data: any, io: any): Promise<void> => {
 
 		return;
 	}
-};
+}
 
 const getStudents = async (req: Request, res: Response): Promise<void> => {
 	const { groupid, coursecode } = req.body;

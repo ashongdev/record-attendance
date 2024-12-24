@@ -1,12 +1,12 @@
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
 import History from "./History";
+import * as XLSX from "xlsx";
+import { Entity } from "../exports/exports";
 
 const StudentList = () => {
 	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
@@ -172,7 +172,7 @@ const StudentList = () => {
 
 						<button
 							className="refresh-btn"
-							onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
+							 onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
 						>
 							Generate Report
 						</button>
@@ -301,6 +301,7 @@ const StudentList = () => {
 													setHistoryQueryIndex(indexnumber);
 												}}
 												title="Click to view student attendance history"
+
 											>
 												<td>{index + 1}</td>
 												<td>{fullname}</td>
