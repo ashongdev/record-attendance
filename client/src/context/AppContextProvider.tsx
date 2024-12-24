@@ -46,7 +46,6 @@ const Context = ({ children }: { children: ReactNode }) => {
 				return true;
 			}
 
-
 			throw new Error("Unauthorized request");
 		} catch (error) {
 			console.error("Authentication error:", error);
