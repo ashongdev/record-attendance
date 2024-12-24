@@ -6,6 +6,7 @@ import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
+import History from "./History";
 
 const StudentList = () => {
 	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
@@ -16,6 +17,8 @@ const StudentList = () => {
 	const [searchValue, setSearchValue] = useState("");
 	const searchRef = useRef<HTMLInputElement>(null);
 	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
+	const [showStudentHistory, setShowStudentHistory] = useState(false);
+	const [historyQueryIndex, setHistoryQueryIndex] = useState("");
 
 	const storedStudentList = getStorageItem("studentList", null);
 	const searchStudent = () => {
@@ -47,10 +50,6 @@ const StudentList = () => {
 	const auth: { status: boolean; key: string; coursename: string } = getStorageItem("auth", null);
 
 	useEffect(() => {
-		authenticate(auth.key, auth.coursename);
-	}, []);
-
-	useEffect(() => {
 		searchStudent();
 	}, [searchValue]);
 
@@ -74,6 +73,13 @@ const StudentList = () => {
 	};
 
 	useEffect(() => {
+		if (!auth.key || !auth.coursename) {
+			window.location.href = "/";
+
+			return;
+		}
+		authenticate(auth.key, auth.coursename);
+
 		socket.on("updateLastChecked", () => {
 			getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode);
 		});
@@ -228,6 +234,13 @@ const StudentList = () => {
 				</>
 			)}
 
+			{showStudentHistory && (
+				<History
+					historyQueryIndex={historyQueryIndex}
+					setShowStudentHistory={setShowStudentHistory}
+				/>
+			)}
+
 			<div className="display-list">
 				<table>
 					<thead>
@@ -284,6 +297,11 @@ const StudentList = () => {
 											<tr
 												className="list"
 												key={id}
+												onClick={() => {
+													setShowStudentHistory(true);
+													setHistoryQueryIndex(indexnumber);
+												}}
+												title="Click to view student attendance history"
 											>
 												<td>{index + 1}</td>
 												<td>{fullname}</td>

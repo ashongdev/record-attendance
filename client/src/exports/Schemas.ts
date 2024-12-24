@@ -70,4 +70,5 @@ export const saveLecDataSchema = yup.object().shape({
 		.required("This field is required")
 		.min(8, "name must be at least 8 characters")
 		.matches(/^[^!@#$%^&*()_+=]+ [A-Za-z ]+$/, "Please enter a valid name"),
+	noOfTimes: yup.number().required(),
 });

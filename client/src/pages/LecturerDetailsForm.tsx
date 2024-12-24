@@ -20,6 +20,7 @@ const LecturerDetailsForm = () => {
 		if (!data) return;
 
 		localStorage.setItem("lec_autofill_details", JSON.stringify(data));
+		localStorage.setItem("noOfTimes", JSON.stringify(data.noOfTimes));
 
 		setTimeout(() => {
 			window.location.href = "/lec/home";
@@ -71,6 +72,20 @@ const LecturerDetailsForm = () => {
 						id="fullname"
 						{...register("fullname")}
 						placeholder="e.g., John Doe"
+					/>
+					<p className="error">{errors.fullname?.message}</p>
+				</div>
+
+				<label htmlFor="fullname">How many time will you be meeting?</label>
+				<div className="group">
+					<input
+						type="number"
+						id="fullname"
+						{...register("noOfTimes")}
+						placeholder="e.g., 12"
+						max={12}
+						min={0}
+						maxLength={2}
 					/>
 					<p className="error">{errors.fullname?.message}</p>
 				</div>
