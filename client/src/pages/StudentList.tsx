@@ -1,8 +1,6 @@
 import Axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import * as XLSX from "xlsx";
-import { Entity } from "../exports/exports";
 import useContextProvider from "../hooks/useContextProvider";
 import useFunctions from "../hooks/useFunctions";
 import search from "../images/search-outline.svg";
@@ -11,46 +9,18 @@ import History from "./History";
 const StudentList = () => {
 	const { studentList, setStudentList, lecAutofillDetails, socket, authenticate } =
 		useContextProvider();
-	const { getStorageItem } = useFunctions();
+	const { getStorageItem, generateExcelFile, searchStudent } = useFunctions();
 
-	const currentDate = new Date().toLocaleString();
 	const [searchValue, setSearchValue] = useState("");
 	const searchRef = useRef<HTMLInputElement>(null);
 	const [filteredStudentList, setFilteredStudentList] = useState(studentList);
 	const [showStudentHistory, setShowStudentHistory] = useState(false);
 	const [historyQueryIndex, setHistoryQueryIndex] = useState("");
 
-	const storedStudentList = getStorageItem("studentList", null);
-	const searchStudent = () => {
-		const trimmedSearchValue = searchValue.trim();
-		setSearchValue(trimmedSearchValue);
-
-		if (!trimmedSearchValue) {
-			setFilteredStudentList([]);
-			return;
-		}
-
-		const exactMatches = studentList.filter(({ indexnumber }) =>
-			indexnumber.includes(trimmedSearchValue)
-		);
-
-		if (exactMatches.length > 0) {
-			setFilteredStudentList(storedStudentList);
-			setFilteredStudentList(storedStudentList);
-			return;
-		}
-
-		if (exactMatches.length < 1) {
-			setFilteredStudentList([]);
-
-			return;
-		}
-	};
-
 	const auth: { status: boolean; key: string; coursename: string } = getStorageItem("auth", null);
 
 	useEffect(() => {
-		searchStudent();
+		searchStudent(setSearchValue, searchValue, studentList, setFilteredStudentList);
 	}, [searchValue]);
 
 	const getStudents = async (groupid: string, coursecode: string) => {
@@ -100,44 +70,6 @@ const StudentList = () => {
 	};
 	const [isInputFocused, setIsInputFocused] = useState(false);
 
-	const generateExcelFile = (studentList: Entity[]) => {
-		try {
-			const data = [
-				[
-					`Attendance for ${lecAutofillDetails?.coursecode} GROUP ${
-						lecAutofillDetails?.groupid
-					} as at ${new Date().toDateString()} ${currentDate}`,
-				],
-				[""],
-				["No.", "Index Number", "Full Name", "Status"],
-			];
-
-			studentList.forEach((student: Entity, index) => {
-				data.push([
-					(index + 1).toString(),
-					student.indexnumber,
-					student.fullname,
-					student.checked === true ? "Present" : "Absent",
-				]);
-			});
-
-			data.push([""]);
-			data.push([`Total Number of Students: ${studentList.length.toString()}`]);
-
-			// Create a worksheet
-			const worksheet = XLSX.utils.aoa_to_sheet(data);
-
-			// Create a workbook and append the worksheet
-			const workbook = XLSX.utils.book_new();
-			XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
-
-			// Export the workbook as a file
-			XLSX.writeFile(workbook, "Attendance.xlsx");
-		} catch (error) {
-			console.log("Error generating excel file");
-		}
-	};
-
 	useEffect(() => {
 		if (lecAutofillDetails?.coursecode && lecAutofillDetails?.groupid) {
 			getStudents(lecAutofillDetails.groupid, lecAutofillDetails.coursecode);
@@ -157,43 +89,50 @@ const StudentList = () => {
 
 						<button className="group-id">Group {lecAutofillDetails?.groupid}</button>
 
-						{lecAutofillDetails.groupid && lecAutofillDetails.coursecode && (
-							<button
-								className="refresh-btn"
-								onClick={() =>
-									getStudents(
-										lecAutofillDetails.groupid,
-										lecAutofillDetails.coursecode
-									)
-								}
-							>
-								REFRESH
-							</button>
-						)}
+						{lecAutofillDetails.groupid &&
+							lecAutofillDetails.coursecode &&
+							studentList.length >= 1 && (
+								<>
+									<button
+										className="refresh-btn"
+										onClick={() =>
+											getStudents(
+												lecAutofillDetails.groupid,
+												lecAutofillDetails.coursecode
+											)
+										}
+									>
+										REFRESH
+									</button>
 
-						<button
-							className="refresh-btn"
-							onClick={() => studentList.length > 0 && generateExcelFile(studentList)}
-						>
-							Generate Report
-						</button>
+									<button
+										className="refresh-btn"
+										onClick={() =>
+											studentList.length > 0 &&
+											generateExcelFile(studentList, lecAutofillDetails)
+										}
+									>
+										Generate Report
+									</button>
 
-						<button
-							className="refresh-btn"
-							onMouseDown={(e) => e.preventDefault()}
-							onClick={() => {
-								setShowSearchBar(true);
-								setTimeout(() => {
-									searchRef.current && searchRef.current.focus();
-								}, 10);
-							}}
-						>
-							<img
-								src={search}
-								alt=""
-								className="icon"
-							/>
-						</button>
+									<button
+										className="refresh-btn"
+										onMouseDown={(e) => e.preventDefault()}
+										onClick={() => {
+											setShowSearchBar(true);
+											setTimeout(() => {
+												searchRef.current && searchRef.current.focus();
+											}, 10);
+										}}
+									>
+										<img
+											src={search}
+											alt=""
+											className="icon"
+										/>
+									</button>
+								</>
+							)}
 					</div>
 
 					{showSearchBar && (
@@ -297,11 +236,11 @@ const StudentList = () => {
 											<tr
 												className="list"
 												key={id}
-												onClick={() => {
+												onDoubleClick={() => {
 													setShowStudentHistory(true);
 													setHistoryQueryIndex(indexnumber);
 												}}
-												title="Click to view student attendance history"
+												title="Double click to view student attendance history"
 											>
 												<td>{index + 1}</td>
 												<td>{fullname}</td>
@@ -336,7 +275,8 @@ const StudentList = () => {
 			</div>
 
 			<p className="date">
-				Attendance for {lecAutofillDetails?.coursecode} as at {currentDate}
+				{/* Attendance for {lecAutofillDetails?.coursecode} as at {currentDate} */}*Double
+				click on a student to view attendance record.
 			</p>
 
 			<div className="register">
